@@ -9,3 +9,6 @@ https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset?resourc
 
 ## Tools used
 - DVC (data versionning)
+
+## Contact :
+You can contact me on LinkedIn : [jeremy-duval-phd](https://www.linkedin.com/in/jeremy-duval-phd/)
