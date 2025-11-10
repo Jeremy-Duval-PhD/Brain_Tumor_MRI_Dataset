@@ -1,6 +1,1 @@
-[core]
-    remote = storage
-['remote "storage"']
-    url = gdrive://1vumnQEFh4il2p3KsNS4AiHg1PJkiZtEf
-    gdrive_use_service_account = true
-    gdrive_service_account_json_file_path = ../.secrets/brain-tumor-mri-dataset-b14bae7f1ecd.json
+
