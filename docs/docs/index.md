@@ -1,4 +1,4 @@
-# Brain_Tumor_MRI_Dataset documentation!
+# Brain_Tumor_MRI_Dataset documentation
 
 ## Description
 
