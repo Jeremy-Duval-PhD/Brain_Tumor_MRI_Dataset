@@ -21,7 +21,7 @@ I prefer to use their metrics compared to accuracy because the objective is earl
 The target variable is composed of four classes:
 
 - no tumor
-- glioma 
+- glioma
 - meningioma
 - pituitary
 
@@ -35,19 +35,41 @@ It seems that I cannot access any metadata or connect data to patients.
 
 The dataset consists of 5,712 MRIs. There are no dublicates.
 
-In this notebook section, we can see that the images have different shapes.
+In this notebook section, we can see that the images have different shapes **=> need to redimension**
 
 #### Images orientation
 
 The MRI can be taken from the front, sides, or bottom with slight rotations. The images can be complete or incomplete.
 
-#### More ? 
-
 ### Content
 
 #### Target visualisation
 
+The classes are quite balanced.
+
+- no tumor: 1595
+- glioma: 1321
+- meningioma: 1339
+- pituitary: 1457
+
 #### Classes signification
+
+- **no tumor:**
+	Control class
+- **[glioma](https://en.wikipedia.org/wiki/Glioma):**
+	A benign or malignant tumor that originates from glial cells (the environment of neurons). They represent **30% of all brain tumors** and **80% of malignant tumors**. There are four subtypes.
+- **[meningioma](https://en.wikipedia.org/wiki/Meningioma):**
+	A slow-growing tumor from the meninges. 92% of cases are benign. The remaining 8% are either atypical or malignant.
+- **[pituitary]():**
+	A tumor that occurs in the pituitary gland. 65% of them are benign. It affects 1/6 people, but only 1/1,000 requires surgical intervention.
+
+#### Images orientations
+
+Most of the MRI pictures are in square format, but the "no tumor" class is balanced between portrait (355), landscape (735), and square (505), with the majority being landscape.
+
+#### Images intensity
+
+#### Images contrast
 
 ### Advenced
 
