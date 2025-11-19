@@ -73,7 +73,9 @@ The view is almost completely axial (from the top). There are a maximum of ten c
 
 #### Images intensity
 
+The brightness intensity was evaluated using a z-score threshold of 2.576 (1% extremes). This suggests 158 cases out of 1595 (9.91%) in 'notumor', 22 out of 1339 (1.64%) in 'meningioma', one out of 1457 (0.07%) in 'pituitary', and none out of 1321 in 'glioma'.
 
+Based on the results of the pairwise z-test, it does not seem that the mean intensity is significantly different between the classes.
 
 #### Images contrast
 
