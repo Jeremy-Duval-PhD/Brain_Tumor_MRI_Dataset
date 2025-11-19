@@ -39,7 +39,7 @@ In this notebook section, we can see that the images have different shapes **=> 
 
 #### Images orientation
 
-The MRI can be taken from the front, sides, or bottom with slight rotations. The images can be complete or incomplete.
+The MRI can be taken from the front (coronal view), sides (sagittal view), or top (axial view) with slight rotations. The images can be complete or incomplete.
 
 ### Content
 
@@ -67,7 +67,13 @@ The classes are quite balanced.
 
 Most of the MRI pictures are in square format, but the "no tumor" class is balanced between portrait (355), landscape (735), and square (505), with the majority being landscape.
 
+### Images view
+
+The view is almost completely axial (from the top). There are a maximum of ten cases for sagittal and coronal views in each tumor class. We might need to exclude theirs ?
+
 #### Images intensity
+
+
 
 #### Images contrast
 
