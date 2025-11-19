@@ -71,13 +71,14 @@ Most of the MRI pictures are in square format, but the "no tumor" class is balan
 
 The view is almost completely axial (from the top). There are a maximum of ten cases for sagittal and coronal views in each tumor class. We might need to exclude theirs ?
 
-#### Images intensity
+#### Images intensity / contrast
 
-The brightness intensity was evaluated using a z-score threshold of 2.576 (1% extremes). This suggests 158 cases out of 1595 (9.91%) in 'notumor', 22 out of 1339 (1.64%) in 'meningioma', one out of 1457 (0.07%) in 'pituitary', and none out of 1321 in 'glioma'.
+* The brightness intensity was evaluated using a z-score threshold of 2.576 (1% extremes). This suggests 158 cases out of 1595 (9.91%) in 'notumor', 22 out of 1339 (1.64%) in 'meningioma', one out of 1457 (0.07%) in 'pituitary', and none out of 1321 in 'glioma'.
 
-Based on the results of the pairwise z-test, it does not seem that the mean intensity is significantly different between the classes.
+* Based on the results of the pairwise z-test, it does not seem that the mean intensity is significantly different between the classes.
 
-#### Images contrast
+* A comparison of class variances using the Levene test suggests high statistical differences. The next step is to retry the test after normalising the images and cropping the borders.
+
 
 ### Advenced
 
