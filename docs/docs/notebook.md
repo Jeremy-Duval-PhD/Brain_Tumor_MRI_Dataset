@@ -79,6 +79,8 @@ The view is almost completely axial (from the top). There are a maximum of ten c
 
 * A comparison of class variances using the Levene test suggests high statistical differences. The next step is to retry the test after normalising the images and cropping the borders.
 
+TODO : norma + crop + redo var tst
+	   visu 10 img by classes 
 
 ### Advenced
 
