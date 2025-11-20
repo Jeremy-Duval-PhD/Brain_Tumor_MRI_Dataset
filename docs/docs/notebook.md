@@ -84,8 +84,7 @@ The view is almost completely axial (from the top). There are a maximum of ten c
 		* The pixel intensity distribution shows one peak for values < 10 and another for values > 210. These seem to represent background and saturation. However, there does not appear to be any noise in the dataset.
 		* I applied a clipping function to the image, setting the lower bound to the first percentile (0) and the upper bound to the 99th percentile (209). This reduces variance differences.
 
-TODO : norma + crop + redo var tst
-	   visu 10 img by classes 
+* Based on ten random examples by class, it seems to improve MRI clarity, with tumours always being visible.
 
 ### Advenced
 
