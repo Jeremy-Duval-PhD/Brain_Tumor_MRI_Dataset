@@ -78,6 +78,10 @@ The view is almost completely axial (from the top). There are a maximum of ten c
 * Based on the results of the pairwise z-test, it does not seem that the mean intensity is significantly different between the classes.
 
 * A comparison of class variances using the Levene test suggests high statistical differences. The next step is to retry the test after normalising the images and cropping the borders.
+	* **Cropping:** I tried three cropping methods on twenty images per class. The "black crop" method, based on the image background, produced the best results.
+	* **Normalization:** Ok.
+	* **Clipping:** : 
+		* The pixel intensity distribution shows one peak for values < 10 and another for values > 210. These seem to represent background and saturation. However, there does not appear to be any noise in the dataset.
 
 TODO : norma + crop + redo var tst
 	   visu 10 img by classes 
