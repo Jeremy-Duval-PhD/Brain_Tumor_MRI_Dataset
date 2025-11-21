@@ -86,9 +86,19 @@ The view is almost completely axial (from the top). There are a maximum of ten c
 
 * Based on ten random examples by class, it seems to improve MRI clarity, with tumours always being visible.
 
-### Advenced
+#### Intraclass variability
 
-#### Hypothesis
+* On the boxplot: 
+	- the median intensities are similar between classes.
+	- there is overlap between classes.
+	- there are many outliers, which **need to be investigated**.
+
+* On the violin plot:
+	- for 'notumor', the three oscillations seem to indicate the use of multiple machines.
+	- for 'meningioma', the long tail can make learning more difficult.
+
+* Outliers:
+	- outliers seem to be primarily due to acquisition problems and are difficult to interpret.
 
 ### Conclusion
 
