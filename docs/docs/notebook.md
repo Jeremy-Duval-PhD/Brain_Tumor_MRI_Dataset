@@ -79,6 +79,7 @@ The view is almost completely axial (from the top). There are a maximum of ten c
 
 * A comparison of class variances using the Levene test suggests high statistical differences. The next step is to retry the test after normalising the images and cropping the borders.
 	* **Cropping:** I tried three cropping methods on twenty images per class. The "black crop" method, based on the image background, produced the best results.
+	* **Resizing:** Taking into account the dimensions of the images, the objective and the performance of my computer, the best compromise is to resize the images to 260x260 pixels.
 	* **Normalization:** Ok.
 	* **Clipping:** : 
 		* The pixel intensity distribution shows one peak for values < 10 and another for values > 210. These seem to represent background and saturation. However, there does not appear to be any noise in the dataset.
