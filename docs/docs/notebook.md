@@ -82,8 +82,8 @@ The view is almost completely axial (from the top). There are a maximum of ten c
 	* **Resizing:** Taking into account the dimensions of the images, the objective and the performance of my computer, the best compromise is to resize the images to 260x260 pixels.
 	* **Normalization:** Ok.
 	* **Clipping:** : 
-		* The pixel intensity distribution shows one peak for values < 10 and another for values > 210. These seem to represent background and saturation. However, there does not appear to be any noise in the dataset.
-		* I applied a clipping function to the image, setting the lower bound to the first percentile (0) and the upper bound to the 99th percentile (209). This reduces variance differences.
+		* The pixel intensity distribution shows one peak for values < -1.4193999767303467 and another for values > 2.883500099182129. These seem to represent background and saturation. However, there does not appear to be any noise in the dataset.
+		* I applied a clipping function to the image, setting the lower bound to the first percentile and the upper bound to the 99th percentile. This reduces variance differences.
 
 * Based on ten random examples by class, it seems to improve MRI clarity, with tumours always being visible.
 
@@ -100,6 +100,13 @@ The view is almost completely axial (from the top). There are a maximum of ten c
 
 * Outliers:
 	- outliers seem to be primarily due to acquisition problems and are difficult to interpret.
+
+* **After cleaning :**
+	- The variability has improved significantly, but I need to watch out for outliers.
+
+#### PCA (to see the underlying structure)
+
+
 
 ### Conclusion
 
