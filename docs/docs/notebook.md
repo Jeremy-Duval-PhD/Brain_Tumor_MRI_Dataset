@@ -89,6 +89,8 @@ The view is almost completely axial (from the top). There are a maximum of ten c
 
 #### Intraclass variability
 
+##### Descriptions and outliers
+
 * On the boxplot: 
 	- the median intensities are similar between classes.
 	- there is overlap between classes.
@@ -104,7 +106,7 @@ The view is almost completely axial (from the top). There are a maximum of ten c
 * **After cleaning :**
 	- The variability has improved significantly, but I need to watch out for outliers.
 
-#### PCA (to see the underlying structure)
+##### PCA (to see the underlying structure)
 
 * The PCA of two components captures more than 91% of the information in the raw data (this can be represented as a scatter plot). The graph shows that the classes are overlapping, with some outliers. The plot does not show sub-classes.
 
