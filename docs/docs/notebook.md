@@ -108,7 +108,7 @@ The view is almost completely axial (from the top). There are a maximum of ten c
 
 * The PCA of two components captures more than 91% of the information in the raw data (this can be represented as a scatter plot). The graph shows that the classes are overlapping, with some outliers. The plot does not show sub-classes.
 
-*
+* On cleaned data, the two-component PCA captures more than 83% of the information (this can be represented as a scatter plot). The observations on the graph are similar, but there is better overlap between the classes.
 
 ### Conclusion
 
