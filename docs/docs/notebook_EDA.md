@@ -1,6 +1,6 @@
 # Notebook EDA
 
-The notebook is here as a space to explore data and protrotype the prediction model.
+The notebook is here as a space to explore data.
 
 **Project goal :** using magnetic resonance imaging (MRI) data, detect the presence of tumors and classify them.
 
