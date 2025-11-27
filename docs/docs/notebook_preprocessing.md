@@ -12,3 +12,6 @@ I prefer to use their metrics compared to accuracy because the objective is earl
 ## Preprocessing
 
 **Goal :** Create a pipeline that performs the entire fixed preprocessing and saves the new data in the 'processed' directory.
+
+> [!CAUTION]
+> I am using VirtualBox for this project, but due to an incompatibility with the TensorFlow library, I need to use Google Collab instead of the Jupyter Notebook for the preprocessing stage.

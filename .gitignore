@@ -154,6 +154,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.bt_env
+.bt_env311
 
 # Spyder project settings
 .spyderproject
