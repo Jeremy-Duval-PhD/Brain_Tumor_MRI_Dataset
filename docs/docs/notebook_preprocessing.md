@@ -15,3 +15,22 @@ I prefer to use their metrics compared to accuracy because the objective is earl
 
 > [!CAUTION]
 > I am using VirtualBox for this project, but due to an incompatibility with the TensorFlow library, I need to use Google Collab instead of the Jupyter Notebook for the preprocessing stage.
+
+## Dataset split
+
+The data to be given has already been split into two directories: *Training* and *Testing*. 
+
+Here, I created a stratified split of the training data to generate training and validation datasets. Currently, the ratios are respectively **80% and 20%**. The class distributions in both datasets are as follows:
+
+- no tumor : 28%
+- glioma : 23%
+- meningioma : 23%
+- pituitary : 26%
+
+## Clipping bounds
+
+Based on the train set, I need to recalculate the clipping bounds. Based on the 1st and 99th percentiles, I obtained the following values: -1.3045 and 3.0091.
+
+## Visual comparisons
+
+The visual comparison with the EDA indicates that the pre-processing pipeline is working correctly.
