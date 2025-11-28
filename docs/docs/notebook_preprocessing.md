@@ -34,3 +34,11 @@ Based on the train set, I need to recalculate the clipping bounds. Based on the 
 ## Visual comparisons
 
 The visual comparison with the EDA indicates that the pre-processing pipeline is working correctly.
+
+## Pipeline artefact
+
+The preprocessing pipeline was exported as an artefact. You can use it as in the following code exemple:
+```python3
+loaded_layer = tf.saved_model.load(ARTEFACTS_DIR+"/preproc_pipeline")
+img, label = loaded_layer("path/to/img.png", "glioma")
+```
