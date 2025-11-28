@@ -42,3 +42,9 @@ The preprocessing pipeline was exported as an artefact. You can use it as in the
 loaded_layer = tf.saved_model.load(ARTEFACTS_DIR+"/preproc_pipeline")
 img, label = loaded_layer("path/to/img.png", "glioma")
 ```
+
+## Saved data
+
+The preprocessed data is saved in the 'data/processed' folder.
+
+All data passed through the pipeline artefact. The original training data was split and saved in 'Training' and 'Validation' folders. The original testing data was saved in the 'Testing' folder.
