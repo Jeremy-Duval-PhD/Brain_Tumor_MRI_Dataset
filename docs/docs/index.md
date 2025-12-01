@@ -13,3 +13,7 @@ https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset?resourc
 
 The Makefile contains the central entry points for common tasks related to this project.
 
+Files runs in the following order :
+1. data/data_load.py *-> download files from Kaggle*
+2. data/create_preprocessing_pipeline.py *-> create a preprocessing pipeline artefact*
+3. data/preprocessing.py *-> preprocess all raw data and save cleaned data in the processed directory*

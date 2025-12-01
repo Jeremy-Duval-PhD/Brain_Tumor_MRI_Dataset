@@ -99,7 +99,7 @@ def main():
     setup_kaggle_credentials(SECRETS_PATH)
 
     dataset_name = config["data_loading"]["kaggle_dataset"]
-    output_dir = PROJECT_ROOT / config["data_loading"]["raw_dir"]
+    output_dir = PROJECT_ROOT / config["path"]["raw_dir"]
 
     download_data(dataset_name, output_dir)
 

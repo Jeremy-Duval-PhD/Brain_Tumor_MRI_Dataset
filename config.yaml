@@ -1,3 +1,17 @@
-data_loading:
+path:
   raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  models_dir: "models"
+  
+general:
+  seed: 42
+  classes: ["notumor", "glioma", "meningioma", "pituitary"]
+  
+data_loading:
   kaggle_dataset: "masoudnickparvar/brain-tumor-mri-dataset"
+  
+data_preprocessing:
+  img_size: 260 
+  split: [0.7, 0.30]  # train - validation -> test data are always in a separated directory
+  low_clip: -1.3045
+  high_clip: 3.0091
