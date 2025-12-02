@@ -15,4 +15,5 @@ The Makefile contains the central entry points for common tasks related to this 
 
 Files runs in the following order :
 1. data/data_load.py *-> download files from Kaggle*
-2. data/preprocessing.py *-> create a preprocessing pipeline artefact and preprocess all raw data and save cleaned data in the processed directory*
+2. data/build_preprocessing_artifact.py.py *-> create a preprocessing pipeline artefact*
+3. data/preprocessing_data.py *->* preprocess all raw data and save cleaned data in the processed directory*
