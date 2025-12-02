@@ -52,5 +52,4 @@ All data passed through the pipeline artefact. The original training data was sp
 ## Python file in *src*
 
 1. data/data_load.py *-> download files from Kaggle*
-2. data/create_preprocessing_pipeline.py *-> create a preprocessing pipeline artefact*
-3. data/preprocessing.py *-> preprocess all raw data and save cleaned data in the processed directory*
+2. data/preprocessing.py *-> create a preprocessing pipeline artefact and preprocess all raw data and save cleaned data in the processed directory*
