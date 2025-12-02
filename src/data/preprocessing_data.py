@@ -15,6 +15,7 @@ import pandas as pd
 import tqdm
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
+import os
 
 # ---------------------------------------------------------------------
 # Logger
@@ -34,7 +35,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = PROJECT_ROOT / "config.yaml"
 
 # ---------------------------------------------------------------------
