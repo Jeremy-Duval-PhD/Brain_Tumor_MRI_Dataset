@@ -1,4 +1,4 @@
-# Notebook EDA
+# Notebook preprocessing
 
 The notebook is here as a space to preprocessing data.
 
