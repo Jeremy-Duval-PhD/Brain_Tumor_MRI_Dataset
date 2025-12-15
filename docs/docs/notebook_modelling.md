@@ -27,6 +27,35 @@ The model is a CNN. It uses a backbone for feature extraction. Then, one head pr
 - meningioma
 - pituitary
 
+### Shared part
+
+- *GlobalAveragePooling1D()*: this layer is needed to flatten the backbone output. We prefer average pooling because it takes the feature position into account more evenly than *Flatten*, and is better for MRI than max pooling.
+- *Dense(512, use_bias=False)*: this layer is needed to abstract and reduce the output of the backbone. The size of 512 is the half of output (1024). We don't use bias because of the subsequent normalisation.
+- *BatchNormalization()*: normalise the weight before heads to stabilise it.
+- *Activation('relu')*: classic and works weel.
+- *Dropout(0.4)*: reduce the over-fitting risk.
+
+### Heads part
+
+Common for two heads :
+
+- *Dense(128, use_bias=False)*: this layer is needed to learn. The size of 128 is a reduction compromize for efficient learnong. We don't use bias because of the subsequent normalisation.
+- *BatchNormalization()*: normalise the weight before heads to stabilise it.
+- *Activation('relu')*: classic and works weel.
+- *Dropout(0.2)*: reduce the over-fitting risk.
+
+For *tumor presence* head:
+
+- *Dense(1,activation='sigmoid')*: binary output.
+
+For *tumor type* head:
+
+- *Dense(4,activation='softmax')*: multiple class output.
+
+### Model compile part
+
+For now, this part is just as classical.
+
 ## Backbone
 
 The backbone use is **DenseNet121** from **RadImageNet**. It is a high-performance model for extracting MRI features, and it is adapted to my dataset's characteristics.
