@@ -54,7 +54,8 @@ For *tumor type* head:
 
 ### Model compile part
 
-For now, this part is just as classical.
+1. Tumour presence: in medical testing, we prefer the recall metric to accuracy. It is more important to detect false negatives. This is why we use *BinaryFocalCrossentropy*. The gamma is fixed to prioritise the detection of difficult cases, in line with the literature consensus. The alpha favours recall, but to a moderate extent, due to the imbalanced data proportions for this question (25% no tumour, 75% tumour).
+2. Tumour type: we use a personalised loss based on *SparseCategoricalCrossentropy*. The goal is to not take into account the prediction if the tumour presence prediction is "0" (no tumour).
 
 ## Backbone
 
