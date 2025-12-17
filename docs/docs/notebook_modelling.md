@@ -78,6 +78,12 @@ Implemented in a second time, the data augmentation steps are as follows:
 -
 -
 
+## Fitting
+
+1. Configure a *ReduceLROnPlateau* with a small, progressive reduction.
+2. Configure an *EarlyStopping*.
+3. In the fit configuration, the training and validation steps are the same size as the file numbers because the batch size is 1.
+
 ## MLflow
 
 Modelling experiments are carried out using MLflow. It provides tools for monitoring metrics and parameters, saving models, and associating datasets. 
