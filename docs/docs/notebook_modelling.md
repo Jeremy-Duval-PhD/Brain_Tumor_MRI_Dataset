@@ -39,7 +39,7 @@ The model is a CNN. It uses a backbone for feature extraction. Then, one head pr
 
 Common for two heads :
 
-- *Dense(128, use_bias=False)*: this layer is needed to learn. The size of 128 is a reduction compromize for efficient learnong. We don't use bias because of the subsequent normalisation.
+- *Dense(128, use_bias=False)*: this layer is needed to learn. The size of 128 is a reduction compromize for efficient learning. We don't use bias because of the subsequent normalisation.
 - *BatchNormalization()*: normalise the weight before heads to stabilise it.
 - *Activation('relu')*: classic and works weel.
 - *Dropout(0.2)*: reduce the over-fitting risk.
@@ -67,9 +67,9 @@ For more informations, follow this [link](https://github.com/BMEII-AI/RadImageNe
 
 Some pre-processing steps are best implemented in the modelling stage.
 
-### Image converstion : gray to RGB
+### Image convertion
 
-I do it at the modelling stage because it depends on the prerequisite of the choosing model.
+Images are already in RGB and don't need convertion.
 
 ### Data augmentation
 
