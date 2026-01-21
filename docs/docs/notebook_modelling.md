@@ -90,3 +90,7 @@ Modelling experiments are carried out using MLflow. It provides tools for monito
 For more informations, please follow this [link](https://mlflow.org/docs/latest/ml/).
 
 Due to my need to use Google Collab and VirtualBox, I have to use **ngrok** as an intermediary between MLflow and the notebook during experimentation. 
+
+## Modelling Tests:
+
+1. WIP : The first test was out from MLflow and with the simple two-head model. It was effective at detecting tumours and slightly better than random at identifying the tumour type.
