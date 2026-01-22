@@ -91,6 +91,8 @@ For more informations, please follow this [link](https://mlflow.org/docs/latest/
 
 Due to my need to use Google Collab and VirtualBox, I have to use **ngrok** as an intermediary between MLflow and the notebook during experimentation. 
 
+For each run, I use the *autolog* function and log model and hyperparameters. It helps with reproducibility.
+
 ## Modelling Tests:
 
 1. WIP : The first test was out from MLflow and with the simple two-head model. It was effective at detecting tumours and slightly better than random at identifying the tumour type, on training data. High overfitting and bad performances on validation data.
