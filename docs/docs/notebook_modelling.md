@@ -89,7 +89,7 @@ Implemented in a second time, the data augmentation steps are as follows:
 Modelling experiments are carried out using MLflow. It provides tools for monitoring metrics and parameters, saving models, and associating datasets. 
 For more informations, please follow this [link](https://mlflow.org/docs/latest/ml/).
 
-Due to my need to use Google Collab and VirtualBox, I have to use **ngrok** as an intermediary between MLflow and the notebook during experimentation. 
+I need to use a cloud notebook due to an incompatibility between TensorFlow and VirtualBox. I started out on Google Collab, but due to poor performance, I need to transfer my notebook to Kaggle. Then, I have to use **ngrok** as an intermediary between MLflow and the notebook during experimentation. 
 
 For each run, I use the *autolog* function and log model and hyperparameters. It helps with reproducibility.
 
