@@ -95,4 +95,8 @@ For each run, I use the *autolog* function and log model and hyperparameters. It
 
 ## Modelling Tests:
 
-1. WIP : The first test was out from MLflow and with the simple two-head model. It was effective at detecting tumours and slightly better than random at identifying the tumour type, on training data. High overfitting and bad performances on validation data.
+0. The first test was out from MLflow and with the simple two-head model. It was effective at detecting tumours and slightly better than random at identifying the tumour type, on training data. High overfitting and bad performances on validation data.
+
+1. The first test using MLflow involved the simple two-head model. It was effective at detecting tumours (with near 100% recall) and at identifying the tumour type (with near 50% accuracy), on both the training and validation data. However, it remained increasing oscillation on the validation data at the end. **End at epoch:** 13. **End with learning rate:** 0.0002500000118743628.
+
+2. Changed EarlyStop min_delta to 0.0001. It was effective at detecting tumours (with near 100% recall) and at identifying the tumour type (with near 50% accuracy), on both the training and validation data. However, it remained increasing oscillation on the validation data at the end. The best epoch for tumor_presence was 4 but it seems to be 12 for tumor_type. **End at epoch:** 14. **End with learning rate:** 6.25000029685907e-05.
