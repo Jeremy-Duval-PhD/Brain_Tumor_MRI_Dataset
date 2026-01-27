@@ -74,9 +74,16 @@ Images are already in RGB and don't need convertion.
 ### Data augmentation
 
 Implemented in a second time, the data augmentation steps are as follows:
--
--
--
+- horizontal flip *(randomly apply)*
+- slight rotation *(randomly apply on an interval)*
+- slight (de)zoom *(randomly apply on an interval)*
+- slight translation *(randomly apply on an interval)*
+- slight contrast variation *(randomly apply on an interval)*
+
+Additional data augmentation steps before fine-tuning:
+- slight brightness variation *(randomly apply on an interval)*
+- slight gaussian noise
+
 
 ## Fitting
 
@@ -99,4 +106,4 @@ For each run, I use the *autolog* function and log model and hyperparameters. It
 
 1. The first test using MLflow involved the simple two-head model. It was effective at detecting tumours (with near 100% recall) and at identifying the tumour type (with near 50% accuracy), on both the training and validation data. However, it remained increasing oscillation on the validation data at the end. **End at epoch:** 13. **End with learning rate:** 0.0002500000118743628.
 
-2. Changed EarlyStop min_delta to 0.0001. It was effective at detecting tumours (with near 100% recall) and at identifying the tumour type (with near 50% accuracy), on both the training and validation data. However, it remained increasing oscillation on the validation data at the end. The best epoch for tumor_presence was 4 but it seems to be 12 for tumor_type. **End at epoch:** 14. **End with learning rate:** 6.25000029685907e-05.
+2. Changed EarlyStop min_delta to 0.0001. It was effective at detecting tumours (with near 100% recall) and at identifying the tumour type (with near 50% accuracy), on both the training and validation data. However, it remained increasing oscillation on the validation data at the end. The best epoch for tumor_presence was 4 but it seems to be 12 for tumor_type. **End at epoch:** 14. **End with learning rate:** 6.25000029685907e-05. **Run** : DenseNet121freeze=True_mask=True_20260126-1551?
