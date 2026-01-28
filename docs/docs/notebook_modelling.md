@@ -189,4 +189,32 @@ For each run, I use the *autolog* function and log model and hyperparameters. It
 
 **Data augmentation conclusion:** fine-tuning requires data augmentation. The best performance was achieved in step 10, even though the raw metrics were slightly worse than in step 2 (i.e. without data augmentation). I will keep their parameters.
 
-12. 
+12. Head tumor_type: 128 to 256 neurones in the hidden dense layer. Detecting tumours with near 98% recall. Identifying the tumour type with near 64% accuracy. Performances both the training and validation data. 
+	- **High oscillation on the validation data, but type accuracy don't fall at end ; nearly same performances than 11.**
+	- The best epoch seems to be 7 for presence and 14 for type. 
+	- **End at epoch:** 18. 
+	- **End with learning rate:** 0.0001250000059371814
+	- **Run** : DenseNet121freeze=True_mask=True_20260128-1442
+
+13. Head tumor_type: back to 128 neurones + Adding loss weights to improve tumor type detection. Detecting tumours with near 97% recall. Identifying the tumour type with near 60% accuracy. Performances both the training and validation data. 
+	- **High oscillation on the validation data with a stabilization on step 14 for presence and nearly same performances than 11.**
+	- The best epoch seems to be 9 for presence and 15 for type. 
+	- **End at epoch:** 19. 
+	- **End with learning rate:** 0.0002500000118743628
+	- **Run** : DenseNet121freeze=True_mask=True_20260128-1509
+
+13. Loss weights: 1.2 to 1.3. Detecting tumours with near 97% recall. Identifying the tumour type with near 62% accuracy. Performances both the training and validation data. 
+	- **Oscillation on the validation data are similar for presence with a few more time to stabilize and clearly improved oscillation for type ; nearly same performances than 11.**
+	- The best epoch seems to be 7 for presence and 13 for type. 
+	- **End at epoch:** 17. 
+	- **End with learning rate:** 0.0002500000118743628
+	- **Run** : DenseNet121freeze=True_mask=True_20260128-1532
+
+**Keeping loss weights at 1.0 for presence and 1.3 for type.**
+
+14. EarlyStopping and ReduceLROnPlateau : monitor on val_tumor_type_loss in place of val_tumor_presence_recall. Detecting tumours with near 97% recall. Identifying the tumour type with near 60% accuracy. Performances both the training and validation data. 
+	- **Oscillation on the validation data are similar for presence with a few more time to stabilize and worst oscillation for type ; type accuracy stay longer at high performances than 13.**
+	- The best epoch seems to be 13 for presence and 13 for type. 
+	- **End at epoch:** 18. 
+	- **End with learning rate:** 0.0002500000118743628
+	- **Run** : DenseNet121freeze=True_mask=True_20260128-1606
