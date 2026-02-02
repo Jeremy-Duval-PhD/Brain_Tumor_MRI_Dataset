@@ -100,6 +100,17 @@ I need to use a cloud notebook due to an incompatibility between TensorFlow and 
 
 For each run, I use the *autolog* function and log model and hyperparameters. It helps with reproducibility.
 
+## Epoch filtering
+
+In the modelling tests section, starting from step 15, the epoch filtering for a modelling test was selected as following:
+- *presence* recall ≥ 0.94
+- *type* accuracy ≥ 0.55
+
+A personalised score is also used. It is defined as the sum of the loss and the principal head metric, weighted accordingly.
+
+$ S = w1 \times Recall_presence_norm + w2 \times Accuracy_type_norm + w3 \times Loss_presence_norm + w4 \times Loss_type_norm $
+
+
 ## Modelling Tests:
 
 0. The first test was out from MLflow and with the simple two-head model. It was effective at detecting tumours and slightly better than random at identifying the tumour type, on training data. High overfitting and bad performances on validation data.
