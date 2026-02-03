@@ -110,8 +110,16 @@ A personalised score is also used. It is defined as the sum of the loss and the 
 
 $ S = w1 \times Recall_presence_norm + w2 \times Accuracy_type_norm + w3 \times Loss_presence_norm + w4 \times Loss_type_norm $
 
+The idea was to prioritise specific metrics for each head while also taking into account the respective loss. Also, presence has been prioritised over type. The chosen weights are:
+- w1 : 0.40
+- w2 : 0.35
+- w3 : 0.15
+- w4 : 0.10
+
 
 ## Modelling Tests:
+
+### Heads optimisation
 
 0. The first test was out from MLflow and with the simple two-head model. It was effective at detecting tumours and slightly better than random at identifying the tumour type, on training data. High overfitting and bad performances on validation data.
 
@@ -229,3 +237,15 @@ $ S = w1 \times Recall_presence_norm + w2 \times Accuracy_type_norm + w3 \times 
 	- **End at epoch:** 18. 
 	- **End with learning rate:** 0.0002500000118743628
 	- **Run** : DenseNet121freeze=True_mask=True_20260128-1606
+
+15. Detecting tumours with near 97% recall. Identifying the tumour type with near 60% accuracy. Performances both the training and validation data. 
+	- **There is some oscillation in the validation data, with a decline above epoch 10 and a gradual stabilisation over time. For loss, epoch 21 was very stable.**
+	- **Personalized score best epoch:** 21. 
+	- **End at epoch:** 22. 
+	- **End with learning rate:** 0.0001250000059371814
+	- **Run** : DenseNet121freeze=True_mask=True_20260203-1523
+
+**Base on the S score, the best epoch was 21. We will keep this as the best heads optimisation.**
+
+
+### Fine-tuning
