@@ -245,7 +245,14 @@ The idea was to prioritise specific metrics for each head while also taking into
 	- **End with learning rate:** 0.0001250000059371814
 	- **Run** : DenseNet121freeze=True_mask=True_20260203-1523
 
-**Base on the S score, the best epoch was 21. We will keep this as the best heads optimisation.**
+16. Adding checkpoint to reload best epoch's weights + monitoring correction ("max' to "min" for loss observation) + adding callback to stop on NaN value. Detecting tumours with near 98.5% recall. Identifying the tumour type with near 66% accuracy. Performances both the training and validation data. 
+	- **There is some oscillation in the first half experimention. After 10 (presence) or 25 (type) epochs, recall, accuracy and all loss are very stable.**
+	- **Personalized score best epoch:** 43. 
+	- **End at epoch:** 52. 
+	- **End with learning rate:** 7.812500371073838e-06
+	- **Run** : DenseNet121freeze=True_mask=True_20260204-1641
+
+**Base on the S score, the best epoch was 39. We will keep this as the best heads model optimisation.**
 
 
 ### Fine-tuning
