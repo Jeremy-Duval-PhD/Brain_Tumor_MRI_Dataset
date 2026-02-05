@@ -252,7 +252,15 @@ The idea was to prioritise specific metrics for each head while also taking into
 	- **End with learning rate:** 7.812500371073838e-06
 	- **Run** : DenseNet121freeze=True_mask=True_20260204-1641
 
-**Base on the S score, the best epoch was 39. We will keep this as the best heads model optimisation.**
+**Base on the S score, the best epoch was 43 from 16th run. We will keep this as the best heads model optimisation.**
+
+#### Confusion matrix for tumor presence head, before fine-tuning
+![Confusion matrix for tumor presence head, before fine-tuning](/figures/Confusion_mtrx_presence_bf_fine_tuning.png)
+
+#### Confusion matrix for type tumor head, before fine-tuning
+![Confusion matrix for type tumor head, before fine-tuning](/figures/Confusion_mtrx_type_bf_fine_tuning.png)
+
+#### Grad-CAM
 
 
 ### Fine-tuning
