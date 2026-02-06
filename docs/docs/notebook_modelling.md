@@ -260,6 +260,10 @@ The idea was to prioritise specific metrics for each head while also taking into
 #### Confusion matrix for type tumor head, before fine-tuning
 ![Confusion matrix for type tumor head, before fine-tuning](/figures/Confusion_mtrx_type_bf_fine_tuning.png)
 
+"no tumor" bad score is explained by the loss mask when the presence head predicts that there is no tumour.
+
+"meningioma" score is explained by the fact that, in some cases, meningiomas can resemble gliomas, and the classification of this tumour type depends more on the MRI scan.
+
 #### Grad-CAM
 
 
