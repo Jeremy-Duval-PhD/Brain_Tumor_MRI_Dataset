@@ -252,7 +252,14 @@ The idea was to prioritise specific metrics for each head while also taking into
 	- **End with learning rate:** 7.812500371073838e-06
 	- **Run** : DenseNet121freeze=True_mask=True_20260204-1641
 
-**Base on the S score, the best epoch was 43 from 16th run. We will keep this as the best heads model optimisation.**
+17. New train after Sequential remove in architecture (to be grad-cam safe). Detecting tumours with near 99% recall. Identifying the tumour type with near 65% accuracy. Performances both the training and validation data. 
+	- **Similar to 16th but a little bit less stable.**
+	- **Personalized score best epoch:** 34. 
+	- **End at epoch:** 50. 
+	- **End with learning rate:** 3.125000148429535e-05
+	- **Run** : DenseNet121freeze=True_mask=True_20260213-1004
+
+**Base on the S score, the best epoch was 34 from 17th run. We will keep this as the best heads model optimisation.**
 
 #### Confusion matrix for tumor presence head, before fine-tuning
 ![Confusion matrix for tumor presence head, before fine-tuning](/figures/Confusion_mtrx_presence_bf_fine_tuning.png)
