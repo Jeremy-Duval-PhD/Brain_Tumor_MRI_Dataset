@@ -272,6 +272,7 @@ The idea was to prioritise specific metrics for each head while also taking into
 "meningioma" score is explained by the fact that, in some cases, meningiomas can resemble gliomas, and the classification of this tumour type depends more on the MRI scan.
 
 #### Grad-CAM
+Due to Keras limitations, I was unable to recreate and connect the model, nor expose the internal layers of the model (it is integrated as a single layer). I therefore added a fixed “Conv2D” layer in order to best approximate the backbone output.
 
 
 ### Fine-tuning
