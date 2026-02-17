@@ -288,5 +288,6 @@ The idea was to prioritise specific metrics for each head while also taking into
 #### Grad-CAM
 Due to Keras limitations, I was unable to recreate and connect the model, nor expose the internal layers of the model (it is integrated as a single layer). I therefore added a fixed “Conv2D” layer in order to best approximate the backbone output.
 
+The Grad-Cam shows the focus of the AI model using the classic JET colour scale (from blue to red).
 
 ### Fine-tuning
