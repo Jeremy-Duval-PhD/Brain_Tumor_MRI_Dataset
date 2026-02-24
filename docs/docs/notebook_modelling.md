@@ -275,8 +275,14 @@ The idea was to prioritise specific metrics for each head while also taking into
 
 **Base on the S score, the best epoch was 40 from 18th run. We will keep this as the best heads model optimisation.**
 
+**NB: because the 'tumor_type' is masked when the 'tumor_presence' head does not detect a tumor, the 'no_tumor' class is never trained. Consequently, the accuracy value was incorrect. The real 'tumor_type' accuracy is 84%.** 
+
 #### Confusion matrix for tumor presence head, before fine-tuning
 ![Confusion matrix for tumor presence head, before fine-tuning](/figures/Confusion_mtrx_presence_bf_fine_tuning.png)
+
+Accuracy by class:
+- no_tumor: 98.4%
+- tumor: 97.9%
 
 #### Confusion matrix for type tumor head, before fine-tuning
 ![Confusion matrix for type tumor head, before fine-tuning](/figures/Confusion_mtrx_type_bf_fine_tuning.png)
@@ -284,6 +290,11 @@ The idea was to prioritise specific metrics for each head while also taking into
 "no tumor" bad score is explained by the loss mask when the presence head predicts that there is no tumour.
 
 "meningioma" score is explained by the fact that, in some cases, meningiomas can resemble gliomas, and the classification of this tumour type depends more on the MRI scan.
+
+Accuracy by class:
+- glioma: 97.7%
+- meningioma: 54.5%
+- pituitary: 98.6%
 
 #### Grad-CAM
 Due to Keras limitations, I was unable to recreate and connect the model, nor expose the internal layers of the model (it is integrated as a single layer). I therefore added a fixed “Conv2D” layer in order to best approximate the backbone output.
