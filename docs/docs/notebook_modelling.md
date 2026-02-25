@@ -302,3 +302,13 @@ Due to Keras limitations, I was unable to recreate and connect the model, nor ex
 The Grad-Cam shows the focus of the AI model using the classic JET colour scale (from blue to red).
 
 ### Fine-tuning
+
+Backbone levels:
+- denseblock1–2 → low-level textures
+- denseblock3 → intermediate patterns
+- denseblock4 → fine semantics
+
+Strategy:
+1. The lowest score is for a meningioma. Taking previous information into account, it appears that there is a lack of fine detection by the backbone. 
+2. We must unfreeze the fourth level of backbone layers.
+3. We need to monitor the meningioma recall to include it in the final S-score.
