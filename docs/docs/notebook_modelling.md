@@ -306,7 +306,7 @@ The Grad-Cam shows the focus of the AI model using the classic JET colour scale 
 Backbone levels:
 - denseblock1–2 → low-level textures
 - denseblock3 → intermediate patterns
-- denseblock4 → fine semantics
+- denseblock4 (conv5_block) → fine semantics
 
 Strategy:
 1. The lowest score is for a meningioma. Taking previous information into account, it appears that there is a lack of fine detection by the backbone. 
