@@ -100,7 +100,10 @@ I need to use a cloud notebook due to an incompatibility between TensorFlow and 
 
 For each run, I use the *autolog* function and log model and hyperparameters. It helps with reproducibility.
 
-## Epoch filtering
+
+## Modelling Tests:
+
+### Epoch filtering
 
 In the modelling tests section, starting from step 15, the epoch filtering for a modelling test was selected as following:
 - *presence* recall ≥ 0.94
@@ -115,9 +118,6 @@ The idea was to prioritise specific metrics for each head while also taking into
 - w2 : 0.35
 - w3 : 0.15
 - w4 : 0.10
-
-
-## Modelling Tests:
 
 ### Heads optimisation
 
@@ -301,7 +301,7 @@ Due to Keras limitations, I was unable to recreate and connect the model, nor ex
 
 The Grad-Cam shows the focus of the AI model using the classic JET colour scale (from blue to red).
 
-### Fine-tuning
+## Fine-tuning
 
 Backbone levels:
 - denseblock1–2 → low-level textures
@@ -312,3 +312,19 @@ Strategy:
 1. The lowest score is for a meningioma. Taking previous information into account, it appears that there is a lack of fine detection by the backbone. 
 2. We must unfreeze the fourth level of backbone layers.
 3. We need to monitor the meningioma recall to include it in the final S-score.
+
+### Epoch filtering
+
+In this section, the epoch filtering for a modelling test was selected as following:
+- *presence* recall ≥ 0.98
+- *type* accuracy ≥ 0.84
+- *type* meningioma recall ≥ 0.54
+
+A personalised score is also used. It is defined as the sum of the the principal head metric and the mningioma recall, weighted accordingly.
+
+$ S = w1 \times val_tumor_presence_recall + w2 \times val_tumor_type_recall_meningioma + w3 \times val_tumor_type_f1score $
+
+The idea was to prioritise specific metrics for each head while also taking into account the respective loss. Also, presence has been prioritised over type. The chosen weights are:
+- w1 : 0.50
+- w2 : 0.30
+- w3 : 0.20
