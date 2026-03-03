@@ -328,3 +328,33 @@ The idea was to prioritise specific metrics for each head while also taking into
 - w1 : 0.50
 - w2 : 0.30
 - w3 : 0.20
+
+#### Unfreeze last layer block (conv5)
+
+19. Detecting tumours with near 99.2% recall. Identifying the tumour type with near 96.1% accuracy. The meningioma recall had greatly increase to 97.8%. Validation performances without over/under fitting.
+	- **Stable.**
+	- **Personalized score best epoch:** 28. 
+	- **End at epoch:** 38. 
+	- **End with learning rate:** 3.125000148429535e-05
+	- **Run** : DenseNet121freeze=True_unfreeze_layers=conv5_block_mask=True_20260303-1530
+
+**Base on the S score, the best epoch was 28 from 19th run. We will keep this as the best heads model optimisation.**
+
+#### Confusion matrix for tumor presence head, before fine-tuning
+![Confusion matrix for tumor presence head, before fine-tuning](/figures/Confusion_mtrx_presence_bf_fine_tuning.png)
+
+Accuracy by class:
+- no_tumor: 98.1%
+- tumor: 99.1%
+
+#### Confusion matrix for type tumor head, before fine-tuning
+![Confusion matrix for type tumor head, before fine-tuning](/figures/Confusion_mtrx_type_bf_fine_tuning.png)
+
+"no tumor" bad score is explained by the loss mask when the presence head predicts that there is no tumour.
+
+"meningioma" score is explained by the fact that, in some cases, meningiomas can resemble gliomas, and the classification of this tumour type depends more on the MRI scan.
+
+Accuracy by class:
+- glioma: 97.0%
+- meningioma: 95.5%
+- pituitary: 99.0%
