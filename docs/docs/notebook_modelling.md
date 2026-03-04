@@ -358,3 +358,54 @@ Accuracy by class:
 - glioma: 97.0%
 - meningioma: 95.5%
 - pituitary: 99.0%
+
+#### Confidence intervals
+##### Head *tumor presence*
+
+- Stat: accuracy
+	- Recall: 0.9886
+	- 95% CI: [0.9806, 0.9933]
+
+- Stat: precision
+	- Recall: 0.9927
+	- 95% CI: [0.9867, 0.9976]
+
+- Stat: recall
+	- Recall: 0.9915
+	- 95% CI: [0.9849, 0.9965]
+
+- Stat: f1
+	- Recall: 0.9921
+	- 95% CI: [0.9876, 0.9958]
+
+##### Head *tumor type*
+
+- Stat: accuracy
+	- Recall: 0.9721
+	- 95% CI: [0.9585, 0.9813]
+
+- Stat: precision
+	- Recall: 0.9715
+	- 95% CI: [0.9601, 0.9831]
+
+- Stat: recall
+	- Recall: 0.9715
+	- 95% CI: [0.9600, 0.9832]
+
+- Stat: f1
+	- Recall: 0.9715
+	- 95% CI: [0.9601, 0.9830]
+
+**Class details:**
+
+- Class: glioma
+	- Recall: 0.9697
+	- 95% CI: [0.9414, 0.9846]
+
+- Class: meningioma
+	- Recall: 0.9552
+	- 95% CI: [0.9234, 0.9742]
+
+- Class: pituitary
+	- Recall: 0.9897
+	- 95% CI: [0.9702, 0.9965]
