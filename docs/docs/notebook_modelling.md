@@ -409,3 +409,16 @@ Accuracy by class:
 - Class: pituitary
 	- Recall: 0.9897
 	- 95% CI: [0.9702, 0.9965]
+
+#### Calibrations
+
+Tumor presence :
+- ECE = 0.030
+- Brier = 0.012
+→ well calibrated
+
+Tumor type (meningioma) :
+- ECE = 0.144
+- Brier = 0.151
+→ moderate calibration
+
