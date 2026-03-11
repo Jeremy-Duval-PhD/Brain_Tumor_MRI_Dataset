@@ -422,3 +422,7 @@ Tumor type (meningioma) :
 - Brier = 0.151
 → moderate calibration
 
+#### SHAP
+
+
+
