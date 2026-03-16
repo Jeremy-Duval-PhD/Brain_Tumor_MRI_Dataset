@@ -424,5 +424,5 @@ Tumor type (meningioma) :
 
 #### SHAP
 
-
+The SHAP method works well. The results are visual and cannot be transcribed here.
 
