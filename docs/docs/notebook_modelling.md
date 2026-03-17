@@ -426,3 +426,5 @@ Tumor type (meningioma) :
 
 The SHAP is base on *GradientExplainer* from the library "shap". The results are visual and cannot be transcribed here.
 
+The grad-CAM and SHAP overlays were then combined to visualize the areas common to both (see the “Agreement” graph).
+
