@@ -424,5 +424,5 @@ Tumor type (meningioma) :
 
 #### SHAP
 
-The SHAP method works well. The results are visual and cannot be transcribed here.
+The SHAP is base on *GradientExplainer* from the library "shap". The results are visual and cannot be transcribed here.
 
