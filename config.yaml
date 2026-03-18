@@ -2,10 +2,13 @@ path:
   raw_dir: "data/raw"
   processed_dir: "data/processed"
   models_dir: "models"
+  output_dir: "reports/figures"
   
 general:
   seed: 42
+  presence_cat: ["no_tumor", "tumor"] 
   classes: ["notumor", "glioma", "meningioma", "pituitary"]
+  debug: False
   
 data_loading:
   kaggle_dataset: "masoudnickparvar/brain-tumor-mri-dataset"
@@ -15,3 +18,9 @@ data_preprocessing:
   split: [0.7, 0.30]  # train - validation -> test data are always in a separated directory
   low_clip: -1.3045
   high_clip: 3.0091
+  
+model:
+  # ARTEFACTS_DIR -> models_dir
+  # BEST_HEAD_DIR -> models_dir
+  batch_size: 32
+  freeze_backbone: True

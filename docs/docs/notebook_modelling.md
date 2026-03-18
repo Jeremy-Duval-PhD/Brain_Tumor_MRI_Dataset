@@ -417,10 +417,20 @@ Tumor presence :
 - Brier = 0.012
 → well calibrated
 
+Tumor type (glioma) :
+- ECE = 0.080
+- Brier = 0.072
+→ well calibrated
+
 Tumor type (meningioma) :
 - ECE = 0.144
 - Brier = 0.151
 → moderate calibration
+
+Tumor type (meningioma) :
+- ECE = 0.044
+- Brier = 0.035
+→ well calibrated
 
 #### SHAP
 
