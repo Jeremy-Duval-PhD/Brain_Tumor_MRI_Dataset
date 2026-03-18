@@ -60,7 +60,7 @@ The classes are quite balanced.
 	A benign or malignant tumor that originates from glial cells (the environment of neurons). They represent **30% of all brain tumors** and **80% of malignant tumors**. There are four subtypes.
 - **[meningioma](https://en.wikipedia.org/wiki/Meningioma):**
 	A slow-growing tumor from the meninges. 92% of cases are benign. The remaining 8% are either atypical or malignant.
-- **[pituitary]():**
+- **[pituitary](https://en.wikipedia.org/wiki/Pituitary_adenoma):**
 	A tumor that occurs in the pituitary gland. 65% of them are benign. It affects 1/6 people, but only 1/1,000 requires surgical intervention.
 
 #### Images orientations
