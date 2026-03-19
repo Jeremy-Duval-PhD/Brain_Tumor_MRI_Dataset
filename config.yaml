@@ -3,6 +3,7 @@ path:
   processed_dir: "data/processed"
   models_dir: "models"
   output_dir: "reports/figures"
+  checkpoint_dir: "checkpoints"
   
 general:
   seed: 42
@@ -24,3 +25,9 @@ model:
   # BEST_HEAD_DIR -> models_dir
   batch_size: 32
   freeze_backbone: True
+  project_name: "BrainTumorMRI"
+  model_type: "DenseNet121"
+  two_head: True
+  mask_tumor_type_loss: True
+  data_augmentation: True
+  unfreeze_layer = "conv5_block"

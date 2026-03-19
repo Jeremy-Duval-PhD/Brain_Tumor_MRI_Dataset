@@ -203,3 +203,7 @@ cython_debug/
 #MLflow
 mlruns/
 artifacts/
+checkpoints/
+
+#Logs
+logs/
