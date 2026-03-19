@@ -440,7 +440,7 @@ def config_callbacks(checkpoint_dir, to_monitor = "val_tumor_type_loss", mode = 
 def run_training_heads(model, loss_weight_presence, loss_weight_type,\
                  config, train_ds, val_ds):
     
-    freeze_backbone = config["model"]["freeze_backbone"]
+    freeze_backbone = config["model"]["epochs"]
     project_name = config["model"]["project_name"]
     mask_tumor_type_loss = config["model"]["mask_tumor_type_loss"]
     model_type = config["model"]["model_type"]
@@ -448,6 +448,7 @@ def run_training_heads(model, loss_weight_presence, loss_weight_type,\
     data_augmentation = config["model"]["data_augmentation"]
     checkpoint_dir = config["path"]["checkpoint_dir"]
     model_name = f"{project_name}_{model_type}_{two_head*"2Head"}"
+    epochs = config["model"]["epochs"]
     
     
     RUN_NAME = (
@@ -480,7 +481,7 @@ def run_training_heads(model, loss_weight_presence, loss_weight_type,\
         history = model.fit(
             train_ds,
             validation_data=val_ds,
-            epochs=80,
+            epochs=epochs,
             #steps_per_epoch=count_tfrecord_batches(TRAIN_DIR, BATCH_SIZE),
             #validation_steps=count_tfrecord_batches(VAL_DIR, BATCH_SIZE),
             callbacks= config_callbacks(checkpoint_dir),
@@ -633,6 +634,7 @@ def run_training_finetuning(model, loss_weight_presence, loss_weight_type,\
     data_augmentation = config["model"]["data_augmentation"]
     checkpoint_dir = config["path"]["checkpoint_dir"]
     model_name = f"{project_name}_{model_type}_{two_head*"2Head"}"
+    epochs = config["model"]["epochs"]
     
     
     RUN_NAME = (
@@ -667,7 +669,7 @@ def run_training_finetuning(model, loss_weight_presence, loss_weight_type,\
         history = model.fit(
             train_ds,
             validation_data=val_ds,
-            epochs=80,
+            epochs=epochs,
             callbacks=finetuning_callback(checkpoint_dir, val_ds),
             verbose=1,
         )

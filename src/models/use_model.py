@@ -15,32 +15,22 @@ from pathlib import Path
 import numpy as np
 
 import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
-from tensorflow.keras.applications import DenseNet121
-from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping
 from tensorflow.keras.models import Model
 
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, f1_score, accuracy_score, precision_score, recall_score
-from sklearn.utils import resample
 from sklearn.calibration import calibration_curve
 from sklearn.metrics import brier_score_loss
 
 from scipy.stats import norm
-
 import shap
 
-import pandas as pd
 import matplotlib.pyplot as plt
-
-from pathlib import Path
-from datetime import datetime
-import math
 import random
 
 import cv2
-from collections import defaultdict
-from typing import Tuple, Optional, Union
+
+
+from make_model import get_model_built, setup_tensorflow, get_datasets
 
 
 # --- Logger Configuration ---
@@ -62,11 +52,10 @@ logger = logging.getLogger(__name__)
 # --- Global Paths ---
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = PROJECT_ROOT / "config.yaml"
-SECRETS_PATH = PROJECT_ROOT / ".secrets" / "kaggle.json"
 
 
 
-
+""" Config """
 def load_config(config_path: Path) -> dict:
     """Load configuration parameters from config.yaml."""
     if not config_path.exists():
@@ -78,253 +67,6 @@ def load_config(config_path: Path) -> dict:
 
     logger.info("Configuration successfully loaded.")
     return config
-
-
-def setup_tensorflow(debug=False):
-    tf.keras.mixed_precision.set_global_policy("mixed_float16")
-    if debug:
-        print("Num GPUs Available:", len(tf.config.list_physical_devices('GPU')))
-    tf.config.list_physical_devices('GPU')
-
-
-def get_backbone(img_size, models_dir, freeze_backbone, debug=False):
-    # 1. Create DenseNet121 WITHOUT weights
-    backbone = DenseNet121(
-        include_top=False,
-        weights=None,
-        input_shape=(img_size, img_size, 3)
-    )
-    
-    # 2. Load RadImageNet weights
-    backbone.load_weights(models_dir + "/RadImageNet-DenseNet121_notop.h5")
-    
-    # 3. Freeze the backbone for firsts training
-    backbone.trainable = not freeze_backbone
-    
-    if debug:
-        print("✅ RadImageNet DenseNet121 loaded successfully")
-    
-    return backbone
-
-
-def get_model_data_augmentation(x, seed):
-    x = layers.RandomFlip("horizontal", seed=seed)(x)
-    x = layers.RandomZoom((-0.03,0.03),(-0.03,0.03), seed=seed)(x)
-    x = layers.RandomTranslation((-0.01,0.01),(-0.01,0.01), seed=seed)(x)
-    return x
-
-
-def get_model_head_presence(x):
-    x = layers.Dense(128, use_bias=False)(x)
-    x = layers.BatchNormalization()(x)
-    x = layers.Activation('relu')(x)
-    x = layers.Dropout(0.2)(x)
-    x = layers.Dense(1,activation='sigmoid',name="tumor_presence")(x)
-    return x
-
-
-def get_model_head_type(x):
-    x = layers.Dense(128, use_bias=False)(x)
-    x = layers.BatchNormalization()(x)
-    x = layers.Activation('relu')(x)
-    x = layers.Dropout(0.2)(x)
-    x = layers.Dense(4,activation='softmax',name="tumor_type")(x)
-    return x
-
-
-def shared_head_part(inputs, backbone):
-    # Data augmentation (training only)
-    x = get_model_data_augmentation(inputs)
-    # Backbone - force into inference
-    x = backbone(x, training=False)
-
-    # Copy backbone output exactly as a proxy layer
-    x = layers.Conv2D(64, 3, strides=1, padding='same', activation='relu', name='Top_Conv_Layer', trainable=False)(x)
-    
-    # Shared head
-    x = layers.GlobalAveragePooling2D()(x)
-    x = layers.Dense(512, use_bias=False)(x)
-    x = layers.BatchNormalization()(x)
-    x = layers.Activation('relu')(x)
-    x = layers.Dropout(0.4)(x)
-
-    return x
-
-
-def assemble_heads(img_size, backbone):
-    inputs = keras.Input(shape=(img_size, img_size, 3))
-    
-    x = shared_head_part(inputs, backbone)
-    
-    #Heads
-    output_presence = get_model_head_presence(x)
-    output_type = get_model_head_type(x)
-    
-    model = keras.Model(
-        inputs=inputs,
-        outputs={
-            "tumor_presence": output_presence,
-            "tumor_type": output_type
-        },
-        name='densenet_two_head'
-    )
-
-    return model
-
-
-def get_loss_presence():
-    return keras.losses.BinaryFocalCrossentropy(
-        gamma=2.0,
-        alpha=0.25 # to favorize tumor detection (penalize false negatives), but taking account that tumors are 75% of data
-    )
-
-
-@tf.keras.utils.register_keras_serializable()
-def masked_sparse_cce(y_true, y_pred):
-    tumor_present = tf.cast(y_true != 0, tf.float32)
-    loss = tf.keras.losses.sparse_categorical_crossentropy(y_true, y_pred)
-    loss = loss * tumor_present
-    return tf.reduce_sum(loss) / (tf.reduce_sum(tumor_present) + 1e-6)
-
-
-@tf.keras.utils.register_keras_serializable()
-class MaskedSparseCategoricalAccuracy(tf.keras.metrics.Metric): # calculate accuracy, excluding "no_tumor" (because of mask)
-    def __init__(self, name="masked_accuracy", **kwargs):
-        super().__init__(name=name, **kwargs)
-        self.total = self.add_weight(name="total", initializer="zeros")
-        self.count = self.add_weight(name="count", initializer="zeros")
-
-    def update_state(self, y_true, y_pred, sample_weight=None):
-        # mask: only tumor
-        mask = tf.cast(y_true != 0, tf.float32)
-
-        y_pred_labels = tf.argmax(y_pred, axis=-1)
-        matches = tf.cast(tf.equal(tf.cast(y_true, tf.int64), y_pred_labels), tf.float32)
-
-        matches = matches * mask
-
-        self.total.assign_add(tf.reduce_sum(matches))
-        self.count.assign_add(tf.reduce_sum(mask))
-
-    def result(self):
-        return self.total / (self.count + 1e-6)
-
-    def reset_states(self):
-        self.total.assign(0.0)
-        self.count.assign(0.0)
-
-
-
-@tf.keras.utils.register_keras_serializable()
-class MeningiomaRecall(tf.keras.metrics.Metric):
-    def __init__(self, name="meningioma_recall", **kwargs):
-        super().__init__(name=name, **kwargs)
-        self.true_positives = self.add_weight(name="tp", initializer="zeros")
-        self.false_negatives = self.add_weight(name="fn", initializer="zeros")
-
-    def update_state(self, y_true, y_pred, sample_weight=None):
-        # y_true = sparse labels (batch,)
-        y_true = tf.cast(y_true, tf.int32)
-
-        # y_pred = logits ou probabilités, shape (batch, num_classes)
-        y_pred = tf.argmax(y_pred, axis=-1, output_type=tf.int32)
-
-        # Meningioma class index = 2
-        meningioma_mask = tf.equal(y_true, 2)
-
-        tp = tf.reduce_sum(
-            tf.cast(tf.logical_and(tf.equal(y_pred, 2), meningioma_mask), tf.float32)
-        )
-        fn = tf.reduce_sum(
-            tf.cast(tf.logical_and(tf.not_equal(y_pred, 2), meningioma_mask), tf.float32)
-        )
-
-        self.true_positives.assign_add(tp)
-        self.false_negatives.assign_add(fn)
-
-    def result(self):
-        return self.true_positives / (self.true_positives + self.false_negatives + 1e-8)
-
-    def reset_state(self):
-        self.true_positives.assign(0.0)
-        self.false_negatives.assign(0.0)
-        
-        
-@tf.keras.utils.register_keras_serializable()
-class BinaryF1(tf.keras.metrics.Metric):
-    def __init__(self, name="f1_score", threshold=0.5, **kwargs):
-        super().__init__(name=name, **kwargs)
-        self.threshold = threshold
-        self.tp = self.add_weight(name="tp", initializer="zeros")
-        self.fp = self.add_weight(name="fp", initializer="zeros")
-        self.fn = self.add_weight(name="fn", initializer="zeros")
-
-    def update_state(self, y_true, y_pred, sample_weight=None):
-        y_pred = tf.cast(y_pred > self.threshold, tf.float32)
-        y_true = tf.cast(y_true, tf.float32)
-
-        tp = tf.reduce_sum(y_true * y_pred)
-        fp = tf.reduce_sum((1 - y_true) * y_pred)
-        fn = tf.reduce_sum(y_true * (1 - y_pred))
-
-        self.tp.assign_add(tp)
-        self.fp.assign_add(fp)
-        self.fn.assign_add(fn)
-
-    def result(self):
-        precision = self.tp / (self.tp + self.fp + 1e-7)
-        recall = self.tp / (self.tp + self.fn + 1e-7)
-        return 2 * precision * recall / (precision + recall + 1e-7)
-
-    def reset_states(self):
-        self.tp.assign(0)
-        self.fp.assign(0)
-        self.fn.assign(0)
-        
-        
-def compile_model(model, masked_sparse_cce):
-    loss_presence = get_loss_presence()
-    
-    loss_weight_presence = 1.0
-    loss_weight_type = 1.3 # we give a little more weight to the classification of the type
-    
-    model.compile(
-        optimizer=keras.optimizers.Adam(), # change learning_rate for 1e-4 in fine-tuning steps
-        loss={
-            "tumor_presence": loss_presence,
-            "tumor_type": masked_sparse_cce,
-        },
-        
-        loss_weights={
-            "tumor_presence": loss_weight_presence,
-            "tumor_type": loss_weight_type, 
-        },
-        
-        metrics={
-            "tumor_presence": [
-                keras.metrics.BinaryAccuracy(name="accuracy"),
-                keras.metrics.Recall(name="recall"),
-                keras.metrics.Precision(name="precision"),
-                BinaryF1(name="f1_score"),
-                keras.metrics.AUC(name="auc")
-            ],
-            "tumor_type": [
-                #"accuracy", 
-                MaskedSparseCategoricalAccuracy(name="masked_accuracy"),
-                MeningiomaRecall(),
-            ],
-        }
-    )
-
-    return model, loss_weight_presence, loss_weight_type
-
-
-def get_model_built(img_size, models_dir, freeze_backbone):
-    
-    backbone = get_backbone(img_size, models_dir, freeze_backbone)
-    model = assemble_heads(img_size, backbone)
-
-    return model
 
 
 """ Get y """
@@ -842,29 +584,500 @@ def get_grad_cam_overlay_img(model, tensor_img, head_name='tumor_presence', grad
     plt.title("Grad-CAM")
     plt.axis("off")
     plt.show()
+    
+
+""" SHAP """
+def build_shap_head_model(model):
+    """
+    Model that takes Top_Conv_Layer feature maps as input
+    and outputs tumor_presence prediction.
+    """
+
+    conv_layer = model.get_layer("Top_Conv_Layer")
+
+    x = conv_layer.output
+
+    # continue the model after the conv layer
+    for layer in model.layers[model.layers.index(conv_layer)+1:]:
+        x = layer(x)
+
+    head_model = tf.keras.Model(
+        inputs=conv_layer.output,
+        outputs=x
+    )
+
+    return head_model
+
+
+def compute_shap_map(shap_values, img_size):
+
+    shap_values = np.array(shap_values)
+
+    # remove batch dim if present
+    if shap_values.ndim == 5:
+        shap_values = shap_values[0]
+
+    # remove output dim if present
+    if shap_values.ndim == 4 and shap_values.shape[-1] == 1:
+        shap_values = shap_values[..., 0]
+
+    # now should be (H,W,3)
+    shap_map = np.mean(np.abs(shap_values), axis=-1)
+
+    # normalization (GradCAM style)
+    epsilon = 1e-6
+    shap_map = (shap_map - shap_map.min()) / (shap_map.max() - shap_map.min() + epsilon)
+
+    shap_map = np.power(shap_map, 0.5)  # amplify small contributions
+
+    shap_map = cv2.resize(shap_map, (img_size, img_size))
+
+    return shap_map
+
+
+def build_stratified_background(
+    dataset,
+    samples_per_class=10,
+    save_path="background.npy",
+    use_save_background=False,
+    debug=False
+):
+    """
+    Build a stratified SHAP background dataset based on tumor_type.
+
+    Args:
+        dataset: tf.data.Dataset
+        samples_per_class: number of images per class
+        save_path: path to save numpy file
+
+    Returns:
+        background_images: numpy array
+    """
+    if use_save_background:
+        background_images = np.load("background.npy")
+        print(f"\n✅ Background loaded from {save_path}")
+    else:
+        class_buckets = {}
+    
+        # -------------------------
+        # Collect images per class
+        # -------------------------
+        for x_batch, y_batch in dataset:
+            images = x_batch.numpy()
+            labels = y_batch["tumor_type"].numpy()
+    
+            for i in range(len(images)):
+                cls = int(labels[i])
+    
+                if cls not in class_buckets:
+                    class_buckets[cls] = []
+    
+                class_buckets[cls].append(images[i])
+    
+        # -------------------------
+        # Sampling
+        # -------------------------
+        background_images = []
+    
+        for cls in sorted(class_buckets.keys()):
+            imgs = class_buckets[cls]
+    
+            n = min(samples_per_class, len(imgs))
+            selected = random.sample(imgs, n)
+    
+            background_images.extend(selected)
+            if debug:
+                print(f"Class {cls}: {len(selected)} samples")
+    
+        background_images = np.array(background_images)
+    
+        # -------------------------
+        # Save
+        # -------------------------
+        np.save(save_path, background_images)
+        if debug:
+            print(f"\n✅ Background saved to {save_path}")
+            print("Shape:", background_images.shape)
+
+    return background_images
+
+
+def get_presence_explainer(model, background_images):
+    presence_model = tf.keras.Model(
+        inputs=model.input,
+        outputs=model.output["tumor_presence"]
+    )
+    
+    explainer_presence = shap.GradientExplainer(
+        presence_model,
+        background_images
+    )
+    
+    return explainer_presence
+
+
+def get_type_explainer(model, background_images, pred_class, type_explainers_cache={}):
+
+    if pred_class in type_explainers_cache:
+        return type_explainers_cache[pred_class], type_explainers_cache
+
+    type_class_model = tf.keras.Model(
+        inputs=model.input,
+        outputs=tf.keras.layers.Lambda(
+            lambda x: x[:, pred_class:pred_class+1]
+        )(model.get_layer("tumor_type").output)
+    )
+
+    explainer = shap.GradientExplainer(
+        type_class_model,
+        background_images
+    )
+
+    type_explainers_cache[pred_class] = explainer
+
+    return explainer, type_explainers_cache
+
+
+""" Gathered visualization """
+
+def normalize_for_display(img):
+    img = img.astype(np.float32)
+    img = img - img.min()
+    img = img / (img.max() + 1e-8)
+    return img
+
+
+def compute_agreement_map(grad_map, shap_map):
+
+    # -------------------------
+    # Resize Grad-CAM
+    # -------------------------
+    grad_map_resized = cv2.resize(
+        grad_map,
+        (shap_map.shape[1], shap_map.shape[0])
+    )
+
+    # -------------------------
+    # Normalisation (CRUCIALE)
+    # -------------------------
+    grad_map_resized = grad_map_resized.astype(np.float32)
+    grad_map_resized = grad_map_resized - grad_map_resized.min()
+    grad_map_resized = grad_map_resized / (grad_map_resized.max() + 1e-8)
+
+    shap_map = shap_map.astype(np.float32)
+    shap_map = shap_map - shap_map.min()
+    shap_map = shap_map / (shap_map.max() + 1e-8)
+
+    # -------------------------
+    # Agreement
+    # -------------------------
+    agreement = grad_map_resized * shap_map
+
+    # amplification
+    agreement = np.power(agreement, 0.5)
+
+    return agreement
+
+
+def visualize_explanations(
+    model,
+    img,
+    img_size,
+    background_images,
+    explainer_presence=None,
+    head="tumor_presence",
+    nsamples=100,
+    true_label=None,
+    classes=None,
+    path="",
+    type_explainers_cache={}
+):
+
+    img_display = normalize_for_display(img)
+
+    # ----------------
+    # Prediction
+    # ----------------
+    pred = model.predict(img[np.newaxis,...], verbose=0)
+
+    if head == "tumor_presence":
+        pred_prob = float(pred["tumor_presence"][0][0])
+        pred_class = int(pred_prob > 0.5)
+
+    else:
+        pred_probs = pred["tumor_type"][0]
+        pred_class = int(np.argmax(pred_probs))
+        pred_prob = float(pred_probs[pred_class])
+
+    # ----------------
+    # Title
+    # ----------------
+    if classes is not None:
+        pred_name = classes[pred_class]
+
+        if true_label is not None:
+            true_name = classes[true_label]
+            title_text = f"TRUE: {true_name}\nPRED: {pred_name} ({pred_prob:.2f})"
+        else:
+            title_text = f"PRED: {pred_name} ({pred_prob:.2f})"
+    else:
+        title_text = f"PRED: {pred_class} ({pred_prob:.2f})"
+
+    # ----------------
+    # Plot
+    # ----------------
+    fig, axes = plt.subplots(1,4, figsize=(16,4))
+
+    # ----------------
+    # Original
+    # ----------------
+    axes[0].imshow(img_display)
+    axes[0].set_title("Original")
+    axes[0].axis("off")
+
+    # ----------------
+    # GradCAM
+    # ----------------
+    gradcam_model = build_gradcam_model(model, head)
+
+    grad_map = compute_gradcam(
+        gradcam_model,
+        img[np.newaxis,...],
+        head
+    )
+
+    grad_overlay = overlay_gradcam(img_display, grad_map)
+
+    axes[1].imshow(grad_overlay)
+    axes[1].set_title("Grad-CAM")
+    axes[1].axis("off")
+
+    # ----------------
+    # SHAP
+    # ----------------
+    if head == "tumor_presence":
+
+        with tf.device("/CPU:0"):
+            shap_values = explainer_presence.shap_values(
+                img[np.newaxis,...],
+                nsamples=nsamples
+            )
+
+    else:
+        pred_class = int(np.argmax(pred["tumor_type"][0]))
+
+        explainer_type, type_explainers_cache = get_type_explainer(
+            model,
+            background_images,
+            pred_class,
+            type_explainers_cache=type_explainers_cache
+        )
+
+        with tf.device("/CPU:0"):
+            shap_values = explainer_type.shap_values(
+                img[np.newaxis,...],
+                nsamples=nsamples
+            )
+
+    shap_map = compute_shap_map(shap_values, img_size)
+
+    shap_overlay = overlay_gradcam(img_display, shap_map)
+
+    axes[2].imshow(shap_overlay)
+    axes[2].set_title("SHAP")
+    axes[2].axis("off")
+
+    # ----------------
+    # Agreement
+    # ----------------
+    agreement_map = compute_agreement_map(grad_map, shap_map)
+
+    agreement_overlay = overlay_gradcam(img_display, agreement_map)
+
+    axes[3].imshow(agreement_overlay)
+    axes[3].set_title("GradCAM × SHAP")
+    axes[3].axis("off")
+    plt.suptitle(title_text, fontsize=14)
+    plt.tight_layout()
+    
+    safe_name = title_text.replace("\n", "_").replace(" ", "_")
+    plt.savefig(os.path.join(path, safe_name + ".png"))
+    
+    return type_explainers_cache
+
+
+def get_explanations_for_confusion_mtrx_presence(
+    model,
+    dataset,
+    background_images,
+    img_size,
+    explainer_presence,
+    presence_cat,
+    nb_ex_by_cat=1,
+    path="",
+    type_explainers_cache={}
+):
+    confusion_mtrx_elm = {
+        "TP": [],
+        "TN": [],
+        "FP": [],
+        "FN": []
+    }
+    
+    for x_batch, y_batch in dataset:
+        preds = model.predict(x_batch, verbose=0)
+        
+        y_true_batch = y_batch["tumor_presence"].numpy().astype(int).flatten()
+        y_pred_batch = (preds["tumor_presence"] > 0.5).astype(int).flatten()
+        
+        for i in range(len(x_batch)):
+            true = y_true_batch[i]
+            pred = y_pred_batch[i]
+            img = x_batch[i].numpy()
+            
+            if true == 1 and pred == 1:
+                confusion_mtrx_elm["TP"].append((img, true))
+            elif true == 0 and pred == 0:
+                confusion_mtrx_elm["TN"].append((img, true))
+            elif true == 0 and pred == 1:
+                confusion_mtrx_elm["FP"].append((img, true))
+            elif true == 1 and pred == 0:
+                confusion_mtrx_elm["FN"].append((img, true))
+    
+    # -------------------------
+    # Visualisation
+    # -------------------------
+    for key in confusion_mtrx_elm:
+        val_lst = confusion_mtrx_elm[key]
+        exemples = random.sample(val_lst, min(nb_ex_by_cat, len(val_lst)))
+
+
+        for img, true in exemples:
+            type_explainers_cache = visualize_explanations(
+                model,
+                img,
+                img_size,
+                background_images,
+                explainer_presence,
+                head="tumor_presence",
+                true_label=true,
+                classes=presence_cat,
+                path=path,
+                type_explainers_cache=type_explainers_cache
+            )
+            
+    return type_explainers_cache
+        
+        
+def get_explanations_for_confusion_mtrx_type(
+    model,
+    dataset,
+    background_images,
+    classes,
+    nb_ex_by_cat=1,
+    skip_no_tumor_cat=True,
+    path="",
+    type_explainers_cache={}
+):    
+    head_name = "tumor_type"
+    confusion_examples = {}
+
+    # -------------------------
+    # Collecte
+    # -------------------------
+    for x_batch, y_batch in dataset:
+        preds = model.predict(x_batch, verbose=0)
+        
+        y_true_batch = y_batch[head_name].numpy()
+        y_pred_batch = preds[head_name].argmax(axis=-1)
+
+        for i in range(len(x_batch)):
+            true_class = int(y_true_batch[i])
+
+            if true_class == 0 and skip_no_tumor_cat:
+                continue
+
+            pred_class = int(y_pred_batch[i])
+            img = x_batch[i].numpy()
+            
+            key = f"{classes[true_class]}__{classes[pred_class]}"
+            
+            if key not in confusion_examples:
+                confusion_examples[key] = []
+
+            confusion_examples[key].append((img, true_class))
+
+    # -------------------------
+    # Visualisation
+    # -------------------------
+    for key in confusion_examples:
+        val_lst = confusion_examples[key]
+        exemples = random.sample(val_lst, min(nb_ex_by_cat, len(val_lst)))
+
+        true_name, pred_name = key.split("__")
+
+        for img, true_class in exemples:
+
+            type_explainers_cache = visualize_explanations(
+                model,
+                img,
+                background_images,
+                head="tumor_type",
+                true_label=true_class,
+                classes=classes,
+                path=path,
+                type_explainers_cache=type_explainers_cache
+            )
+
+    return type_explainers_cache
 
 
 
 
 
 
+def run_medical_XAI_one_image(img, model, background_images, explainer_presence, \
+                              output_dir, classes, type_explainers_cache={}):
+    _ = visualize_explanations(
+        model,
+        img,
+        background_images,
+        explainer_presence,
+        head="tumor_presence",
+        true_label=1,
+        classes=["no_tumor", "tumor"],
+        path=output_dir
+    )
+    
+    type_explainers_cache = visualize_explanations(
+        model,
+        img,
+        background_images,
+        head="tumor_type",
+        true_label=2,
+        classes=classes,
+        path=output_dir,
+        type_explainers_cache=type_explainers_cache
+    )
+    
+    return type_explainers_cache
 
 
 
-
-
-
-def run_medical_XAI_pipeline(model, dataset, config):
+def run_medical_XAI_pipeline(model, dataset, config, type_explainers_cache={}):
     """
     Run medical pipeline for the whole dataset
     """
-    classes = config["general"]["classes"]
+    classes = config["general"]["nb_img_shap"]
+    presence_cat = config["general"]["presence_cat"]
     output_dir = config['path']['output_dir']
+    img_size = config['data_preprocessing']['img_size']
+    nb_img_shap = config["model"]["nb_img_shap"]
     
     y_true_pres, y_pred_pres, y_prob_pres = get_y_presence(model, dataset)
     y_true_type, y_pred_type = get_y_type(model, dataset)
     
-    get_presence_confusion_matrix_plot(y_true_pres, y_pred_pres, config["general"]["presence_cat"])
+    get_presence_confusion_matrix_plot(y_true_pres, y_pred_pres, config["general"]["presence_cat"], output_dir)
     get_type_confusion_matrix_plot(y_true_type, y_pred_type, classes)
     
     ci_pres_dct = get_presence_CI(y_true_pres, y_pred_pres, print_results=True)
@@ -873,6 +1086,53 @@ def run_medical_XAI_pipeline(model, dataset, config):
     
     run_reliability_stats(y_true_pres, y_prob_pres,output_dir, variable="presence")
     run_reliability_by_class(classes, model, dataset, output_dir)
+    
+    background_images = build_stratified_background(
+        dataset,
+        samples_per_class=10,
+        save_path="background.npy",
+        use_save_background=True
+    )
+    explainer_presence = get_presence_explainer(model, background_images)
+    
+    count=0
+    for x_batch, _ in dataset:
+        for img in x_batch:
+            if count >= nb_img_shap:
+                break
+            img = img.numpy()
+            type_explainers_cache = run_medical_XAI_one_image(img, model,\
+                                          background_images, explainer_presence, \
+                                          output_dir, classes, type_explainers_cache)
+            count+=1
+    
+    mtrx_path = output_dir + "/matrix"
+    os.makedirs(mtrx_path, exist_ok=True)
+    
+    type_explainers_cache = get_explanations_for_confusion_mtrx_presence(
+        model,
+        dataset,
+        background_images,
+        img_size,
+        explainer_presence,
+        presence_cat,
+        nb_ex_by_cat=1,
+        path=mtrx_path,
+        type_explainers_cache=type_explainers_cache
+    )
+    
+    type_explainers_cache = get_explanations_for_confusion_mtrx_type(
+        model,
+        dataset,
+        background_images,
+        classes,
+        nb_ex_by_cat=1,
+        path=mtrx_path,
+        type_explainers_cache=type_explainers_cache
+    )
+    
+    
+    return type_explainers_cache
     
 
 
@@ -890,21 +1150,26 @@ def main():
     img_size = config["data_preprocessing"]["img_size"]
     model_dir = config["model"]["models_dir"]
     
+    processed_dir = config["path"]["processed_dir"]
+    batch_size = config["model"]["batch_size"]
+    
+    setup_tensorflow()
+    
     """Model rebuild"""
     model = get_model_built(
         img_size,
         model_dir,
-        FREEZE_BACKBONE=False
+        freeze_backbone=False
     )
     
-    model.load_weights(
-        model_dir + "/brain_tumor_heads.weights.h5"
-    )
+    model.load_weights(os.path.join(model_dir, "brain_tumor_heads.weights.h5"))
     
     if debug:
         print("✅ Model reconstructed + weights loaded")
     
-    
+    type_explainers_cache={}
+    dataset = get_datasets(processed_dir, dataset_name='Testing', batch_size=batch_size)
+    run_medical_XAI_pipeline(model, dataset, config, type_explainers_cache=type_explainers_cache)
     
 
     logger.info("=== Use Model Script Completed Successfully ===")
