@@ -341,14 +341,14 @@ The idea was to prioritise specific metrics for each head while also taking into
 **Base on the S score, the best epoch was 28 from 19th run. We will keep this as the best heads model optimisation.**
 
 #### Confusion matrix for tumor presence head, before fine-tuning
-![Confusion matrix for tumor presence head, before fine-tuning](/figures/Confusion_mtrx_presence_bf_fine_tuning.png)
+![Confusion matrix for tumor presence head, after fine-tuning](/figures/Confusion_mtrx_presence_af_fine_tuning.png)
 
 Accuracy by class:
 - no_tumor: 98.1%
 - tumor: 99.1%
 
 #### Confusion matrix for type tumor head, before fine-tuning
-![Confusion matrix for type tumor head, before fine-tuning](/figures/Confusion_mtrx_type_bf_fine_tuning.png)
+![Confusion matrix for type tumor head, after fine-tuning](/figures/Confusion_mtrx_type_af_fine_tuning.png)
 
 "no tumor" bad score is explained by the loss mask when the presence head predicts that there is no tumour.
 
