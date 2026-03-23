@@ -1,3 +1,20 @@
+# Medical Disclaimer
+
+This software and associated machine learning models are provided for research and educational purposes only.
+
+They:
+- are NOT certified medical devices
+- have NOT undergone regulatory approval
+- must NOT be used for clinical decision-making without appropriate regulatory clearance and clinical validation
+
+The authors assume no responsibility for:
+- clinical outcomes
+- diagnostic decisions
+- patient harm
+- regulatory compliance
+
+Users are solely responsible for ensuring compliance with all applicable medical regulations.
+
 # Brain_Tumor_MRI_Dataset
 
 The aim of this project is to develop a computer vision model. Its role is to diagnose the presence or absence of a brain tumor and its type, using MRI images.
@@ -9,6 +26,7 @@ https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset?resourc
 
 ## Tools used
 - DVC (data versionning)
+- MLFlow (experiments versionning)
 
 ## Project Organization
 From: <a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
@@ -67,20 +85,7 @@ From: <a target="_blank" href="https://cookiecutter-data-science.drivendata.org/
 ## Contact :
 You can contact me on LinkedIn : [jeremy-duval-phd](https://www.linkedin.com/in/jeremy-duval-phd/)
 
-# Medical Disclaimer
+## Availability :
 
-This software and associated machine learning models are provided for research and educational purposes only.
-
-They:
-- are NOT certified medical devices
-- have NOT undergone regulatory approval
-- must NOT be used for clinical decision-making without appropriate regulatory clearance and clinical validation
-
-The authors assume no responsibility for:
-- clinical outcomes
-- diagnostic decisions
-- patient harm
-- regulatory compliance
-
-Users are solely responsible for ensuring compliance with all applicable medical regulations.
+- [HuggingFace](https://huggingface.co/Jeremy-Duval-PhD/Brain_Tumor_Detector/tree/main)
 
