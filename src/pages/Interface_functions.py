@@ -52,6 +52,7 @@ def init_session_state_var():
     
     
 def load_image(uploaded_file):
+    uploaded_file.seek(0)
     img = Image.open(uploaded_file)
     img = img.convert("RGB")
     return np.array(img)
@@ -101,12 +102,12 @@ def preprocess_files(uploaded_files):
         
     images = [load_image(f) for f in new_files]
     images = [tf.convert_to_tensor(img) for img in images]
-    labels = [-1 for i in range(0,len(images))]
+    labels = ["none" for i in range(0,len(images))]
     
     model = get_preproc_model()
     ds = get_tf_dataset(model, images, labels)
     preproc_img = get_clean_tfrecords(ds)
-        
+    
     return preproc_img
     
 
