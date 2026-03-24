@@ -2,7 +2,6 @@ import streamlit as st
 import numpy as np
 from pathlib import Path
 import yaml
-import tqdm
 import tensorflow as tf
 from PIL import Image
 
@@ -19,7 +18,7 @@ def set_config():
     if 'config' not in st.session_state:
         st.session_state['config'] = load_config(st.session_state['config_path'])
 
-
+@st.cache_resource
 def get_preproc_model():
     set_config()
     return tf.saved_model.load(str(st.session_state['artefact_dir']))
