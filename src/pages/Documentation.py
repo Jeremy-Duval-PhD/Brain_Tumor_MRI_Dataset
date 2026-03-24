@@ -529,7 +529,7 @@ tab_model.markdown('''
             
             **Base on the S score, the best epoch was 28 from 19th run. We will keep this as the best heads model optimisation.**
             
-            #### Confusion matrix for tumor presence head, before fine-tuning
+            #### Confusion matrix for tumor presence head, after fine-tuning
                   ''')
                   
 tab_model.image('docs/docs/figures/Confusion_mtrx_presence_af_fine_tuning.png', \
@@ -540,7 +540,7 @@ tab_model.markdown('''
             - no_tumor: 98.1%
             - tumor: 99.1%
             
-            #### Confusion matrix for type tumor head, before fine-tuning
+            #### Confusion matrix for type tumor head, after fine-tuning
                   ''')
                   
 tab_model.image('docs/docs/figures/Confusion_mtrx_type_af_fine_tuning.png', \
@@ -625,7 +625,7 @@ tab_model.markdown('''
             - Brier = 0.151
             → moderate calibration
             
-            Tumor type (meningioma) :
+            Tumor type (pituitary) :
             - ECE = 0.044
             - Brier = 0.035
             → well calibrated

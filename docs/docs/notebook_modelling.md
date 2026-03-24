@@ -427,7 +427,7 @@ Tumor type (meningioma) :
 - Brier = 0.151
 → moderate calibration
 
-Tumor type (meningioma) :
+Tumor type (pituitary) :
 - ECE = 0.044
 - Brier = 0.035
 → well calibrated
