@@ -90,11 +90,14 @@ def get_clean_tfrecords(ds):
     return tfrecords
     
     
-def preprocess_files(uploaded_files, file_names):    
+def preprocess_files(uploaded_files):    
     if 'clean_files' not in st.session_state:
-        new_files = file_names
+        new_files = uploaded_files
     else:
-        new_files = np.setdiff1d(file_names, st.session_state['clean_files'])
+        new_files = [
+            f for f in uploaded_files
+            if f.name not in st.session_state['file_names']
+        ]
         
     images = [load_image(f) for f in new_files]
     images = [tf.convert_to_tensor(img) for img in images]
@@ -130,7 +133,7 @@ def set_uploaded_data(section):
         if 'clean_files' not in st.session_state \
         or file_names != st.session_state['file_names']:
             init_session_state_var() 
-            clean_files = preprocess_files(uploaded_files, file_names)
+            clean_files = preprocess_files(uploaded_files)
             st.session_state['clean_files'] = clean_files
             st.session_state['file_names'] = file_names
         
