@@ -141,3 +141,16 @@ def set_uploaded_data(section):
         if 'clean_files' in st.session_state:
             session_clear()
         st.rerun()
+        
+        
+        
+        
+        
+        
+        
+        
+def set_model_visualisation(section):
+    # TODO:
+    # Call model for all images
+    # Call visualiation for all images
+    pass
