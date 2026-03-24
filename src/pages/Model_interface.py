@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from src.pages.Interface_functions import set_uploaded_data#, set_model_visualisation
+from src.pages.Interface_functions import set_uploaded_data, set_model_visualisation
 
 st.title("Analyse your MRI")
 
@@ -8,7 +8,7 @@ set_uploaded_data(st)
 
 st.divider()
 
-#set_model_visualisation(st)
+set_model_visualisation(st)
 
 details_expander = st.expander('Global metrics for interpretability')
 details_expander.markdown('''
