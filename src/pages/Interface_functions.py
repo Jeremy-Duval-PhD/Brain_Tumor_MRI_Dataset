@@ -162,7 +162,7 @@ def set_uploaded_data(section):
                                        accept_multiple_files=True,
                                        key=f"uploader_{st.session_state.uploader_key}")
     
-    if uploaded_files is not None:
+    if uploaded_files is not None and uploaded_files:
         st.write(uploaded_files)
         file_names = get_files_names(uploaded_files)
         st.write(file_names)
