@@ -77,7 +77,8 @@ def build_df_from_uploaded(paths, nb_files, labels=None):
     
 def get_tf_dataset(preproc_model, nb_files):
     df = build_df_from_uploaded(st.session_state['temp_dir_raw'], nb_files)
-    st.dataframe(df)
+    for p in df["filepath"]:
+        st.write(p, Path(p).is_file(), Path(p).is_dir())
     paths = df["filepath"].astype(str).values
     labels = df["label"].astype(str).values
     ds = tf.data.Dataset.from_tensor_slices((paths, labels))
