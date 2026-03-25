@@ -99,9 +99,6 @@ def get_tf_dataset(preproc_model, nb_files):
                 num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.prefetch(tf.data.AUTOTUNE)
     
-    st.write("Labels envoyés :", df["label"].unique())
-    st.write("Classes modèle :", st.session_state['config']["general"]["classes"])
-    
     return ds
 
 
@@ -208,15 +205,12 @@ def preprocess_files(section, uploaded_files):
     
     model = get_preproc_model()
     ds = get_tf_dataset(model, nb_files)
-    st.write("ds done")
     
     with st.spinner("Preprosessing images in progress...", show_time=True):
         preproc_img = get_clean_tfrecords(ds)
     
-    st.write("Preproc done")
     batch_size = st.session_state['config']['model']['batch_size']
     save_tf_records(section, ds, nb_files, batch_size)
-    st.write("record done")
     
     return preproc_img
     
@@ -237,9 +231,7 @@ def set_uploaded_data(section):
                                        key=f"uploader_{st.session_state.uploader_key}")
     
     if uploaded_files is not None and uploaded_files:
-        #st.write(uploaded_files)
         file_names = get_files_names(uploaded_files)
-        #st.write(file_names)
         
         if 'clean_files' not in st.session_state \
         or file_names != st.session_state['file_names']:
