@@ -69,16 +69,39 @@ def build_df_from_uploaded(paths, nb_files, labels=None):
         # default value -> use only to compare prediction and reality during model creation
         labels = ["notumor"] * nb_files
 
+def build_df_from_uploaded(paths, labels=None):
+    """
+    paths : list[str] → peut contenir des dossiers OU fichiers
+    """
+
+    filepaths = []
+
+    for p in paths:
+        p = Path(p)
+
+        if p.is_dir():
+            # browse folder
+            for img_file in p.iterdir():
+                if img_file.is_file():
+                    filepaths.append(str(img_file.resolve()))
+        elif p.is_file():
+            filepaths.append(str(p.resolve()))
+
+    # remove duplicates
+    filepaths = list(set(filepaths))
+
+    if labels is None:
+        # default value -> use only to compare prediction and reality during model creation
+        labels = ["notumor"] * len(filepaths)
+
     return pd.DataFrame({
-        "filepath": paths,
+        "filepath": filepaths,
         "label": labels
     })
     
     
 def get_tf_dataset(preproc_model, nb_files):
-    df = build_df_from_uploaded(st.session_state['temp_dir_raw'], nb_files)
-    for p in df["filepath"]:
-        st.write(p, Path(p).is_file(), Path(p).is_dir())
+    df = build_df_from_uploaded([st.session_state['temp_dir_raw']])
     paths = df["filepath"].astype(str).values
     labels = df["label"].astype(str).values
     ds = tf.data.Dataset.from_tensor_slices((paths, labels))
