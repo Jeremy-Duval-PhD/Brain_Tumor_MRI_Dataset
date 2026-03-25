@@ -67,7 +67,7 @@ def build_df_from_uploaded(paths, nb_files, labels=None):
 
     if labels is None:
         # default value -> use only to compare prediction and reality during model creation
-        labels = ["unknown"] * nb_files
+        labels = ["notumor"] * nb_files
 
     return pd.DataFrame({
         "filepath": paths,
@@ -85,11 +85,8 @@ def get_tf_dataset(preproc_model, nb_files):
                 num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.prefetch(tf.data.AUTOTUNE)
     
-    for p in paths:
-        if not Path(p).exists():
-            st.error(f"Missing file: {p}")
-        else:
-            st.write(f"OK: {p}")
+    st.write("Labels envoyés :", df["label"].unique())
+    st.write("Classes modèle :", st.session_state['config']["general"]["classes"])
     
     return ds
 
