@@ -115,7 +115,7 @@ def save_images(section, images, nb_files, filename_prefix="img"):
 
         # saving
         img_path = temp_dir / f"{filename_prefix}_{idx:04d}.jpg"
-        pil_img.save(img_path, format="JPG")
+        pil_img.save(img_path, format="JPEG")
 
         count += 1
 
