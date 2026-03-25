@@ -59,16 +59,6 @@ def load_image(uploaded_file):
     return np.array(img)
 
 
-def build_df_from_uploaded(paths, nb_files, labels=None):
-    """
-    paths : list[str] → chemins des images sauvegardées
-    labels : list[str] ou None
-    """
-
-    if labels is None:
-        # default value -> use only to compare prediction and reality during model creation
-        labels = ["notumor"] * nb_files
-
 def build_df_from_uploaded(paths, labels=None):
     """
     paths : list[str] → peut contenir des dossiers OU fichiers
