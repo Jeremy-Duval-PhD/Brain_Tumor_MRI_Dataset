@@ -5,9 +5,7 @@ import yaml
 import tensorflow as tf
 from PIL import Image
 import tempfile
-
-from src.data.preprocessing_data import build_df_from_folder
-
+import pandas as pd
 
 def load_config(config_path: Path) -> dict:
     if not config_path.exists():
@@ -59,15 +57,28 @@ def load_image(uploaded_file):
     img = Image.open(uploaded_file)
     img = img.convert("RGB")
     return np.array(img)
+
+
+def build_df_from_uploaded(paths, labels=None):
+    """
+    paths : list[str] → chemins des images sauvegardées
+    labels : list[str] ou None
+    """
+
+    if labels is None:
+        # default value -> use only to compare prediction and reality during model creation
+        labels = ["unknown"] * len(paths)
+
+    return pd.DataFrame({
+        "filepath": paths,
+        "label": labels
+    })
     
     
-def get_tf_dataset(preproc_model, nb_img):
-    # default value -> use only to compare prediction and reality during model creation
-    labels = ["glioma" for i in range(0,nb_img)] 
-    # dataframe (img, lbl) for dataset generation 
-    df = build_df_from_folder(st.session_state['temp_dir_raw'])
+def get_tf_dataset(preproc_model):
+    df = build_df_from_uploaded(st.session_state['temp_dir_raw'])
     st.write(df["filepath"].values)
-    ds = tf.data.Dataset.from_tensor_slices((df["filepath"].values, labels))
+    ds = tf.data.Dataset.from_tensor_slices((df["filepath"].values, df["label"].values))
     ds = ds.map(lambda img, lbl: preproc_model(img, lbl),
                 num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.prefetch(tf.data.AUTOTUNE)
@@ -178,7 +189,7 @@ def preprocess_files(section, uploaded_files):
     
     model = get_preproc_model()
     st.write("Preproc load")
-    ds = get_tf_dataset(model, nb_files)
+    ds = get_tf_dataset(model)
     
     with st.spinner("Preprosessing images in progress...", show_time=True):
         preproc_img = get_clean_tfrecords(ds)
