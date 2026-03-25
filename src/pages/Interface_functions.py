@@ -6,6 +6,8 @@ import tensorflow as tf
 from PIL import Image
 import tempfile
 
+from src.data.preprocessing_data import build_df_from_folder
+
 
 def load_config(config_path: Path) -> dict:
     if not config_path.exists():
@@ -59,8 +61,13 @@ def load_image(uploaded_file):
     return np.array(img)
     
     
-def get_tf_dataset(preproc_model, images, labels):
-    ds = tf.data.Dataset.from_tensor_slices((images, labels))
+def get_tf_dataset(preproc_model, nb_img):
+    # default value -> use only to compare prediction and reality during model creation
+    labels = ["glioma" for i in range(0,nb_img)] 
+    # dataframe (img, lbl) for dataset generation 
+    df = build_df_from_folder(st.session_state['temp_dir_raw'])
+    st.write(df["filepath"].values)
+    ds = tf.data.Dataset.from_tensor_slices((df["filepath"].values, labels))
     ds = ds.map(lambda img, lbl: preproc_model(img, lbl),
                 num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.prefetch(tf.data.AUTOTUNE)
@@ -123,7 +130,7 @@ def save_images(section, images, nb_files, filename_prefix="img"):
         progress = count / nb_files
         progress_bar.progress(progress, text=f"{progress_text} ({count}/{nb_files})")
 
-    progress_bar.progress(1.0, text="Done ✅")
+    progress_bar.progress(1.0, text="Saving images. Done ✅")
 
 
 def save_tf_records(section, ds, nb_files, batch_size, filename_prefix="data"):
@@ -136,7 +143,6 @@ def save_tf_records(section, ds, nb_files, batch_size, filename_prefix="data"):
     progress_text = "Saving images. Please wait."
     progress_bar = section.progress(0, text=progress_text)
 
-    lbl = tf.constant(0) # default value -> use only to compare prediction and reality during model creation
     for img, lbl in ds:
         if count % batch_size == 0:
             if writer:
@@ -151,7 +157,7 @@ def save_tf_records(section, ds, nb_files, batch_size, filename_prefix="data"):
         progress = count / nb_files
         progress_bar.progress(progress, text=f"{progress_text} ({count}/{nb_files})")
 
-    progress_bar.progress(1.0, text="Done ✅")
+    progress_bar.progress(1.0, text="Saving images. Done ✅")
 
     if writer:
         writer.close()
@@ -170,11 +176,9 @@ def preprocess_files(section, uploaded_files):
     nb_files = len(images)
     save_images(section, images, nb_files)
     
-    images = [tf.convert_to_tensor(img) for img in images]
-    labels = ["none" for i in range(0,len(images))]
-    
     model = get_preproc_model()
-    ds = get_tf_dataset(model, images, labels)
+    st.write("Preproc load")
+    ds = get_tf_dataset(model, nb_files)
     
     with st.spinner("Preprosessing images in progress...", show_time=True):
         preproc_img = get_clean_tfrecords(ds)
@@ -201,9 +205,9 @@ def set_uploaded_data(section):
                                        key=f"uploader_{st.session_state.uploader_key}")
     
     if uploaded_files is not None and uploaded_files:
-        st.write(uploaded_files)
+        #st.write(uploaded_files)
         file_names = get_files_names(uploaded_files)
-        st.write(file_names)
+        #st.write(file_names)
         
         if 'clean_files' not in st.session_state \
         or file_names != st.session_state['file_names']:
