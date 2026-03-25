@@ -85,6 +85,12 @@ def get_tf_dataset(preproc_model, nb_files):
                 num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.prefetch(tf.data.AUTOTUNE)
     
+    for p in paths:
+        if not Path(p).exists():
+            st.error(f"Missing file: {p}")
+        else:
+            st.write(f"OK: {p}")
+    
     return ds
 
 
