@@ -77,8 +77,10 @@ def build_df_from_uploaded(paths, nb_files, labels=None):
     
 def get_tf_dataset(preproc_model, nb_files):
     df = build_df_from_uploaded(st.session_state['temp_dir_raw'], nb_files)
-    st.write(df["filepath"].values)
-    ds = tf.data.Dataset.from_tensor_slices((df["filepath"].values, df["label"].values))
+    st.dataframe(df)
+    paths = df["filepath"].astype(str).values
+    labels = df["label"].astype(str).values
+    ds = tf.data.Dataset.from_tensor_slices((paths, labels))
     ds = ds.map(lambda img, lbl: preproc_model(img, lbl),
                 num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.prefetch(tf.data.AUTOTUNE)
@@ -190,6 +192,7 @@ def preprocess_files(section, uploaded_files):
     model = get_preproc_model()
     st.write("Preproc load")
     ds = get_tf_dataset(model, nb_files)
+    st.write("ds done")
     
     with st.spinner("Preprosessing images in progress...", show_time=True):
         preproc_img = get_clean_tfrecords(ds)
