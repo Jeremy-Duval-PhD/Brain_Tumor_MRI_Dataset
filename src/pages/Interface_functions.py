@@ -214,7 +214,7 @@ def set_uploaded_data(section):
                  You can upload MRI files at jpg format. 
               '''
     uploaded_files = cntr.file_uploader("Upload your MRI", 
-                                       type=['png, jpg'],
+                                       type=['png', 'jpg'],
                                        help=help_msg, 
                                        accept_multiple_files=True,
                                        key=f"uploader_{st.session_state.uploader_key}")
