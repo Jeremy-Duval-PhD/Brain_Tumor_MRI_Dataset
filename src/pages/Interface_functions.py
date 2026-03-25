@@ -104,6 +104,9 @@ def save_images(section, images, nb_files, filename_prefix="img"):
 
     for idx, img in enumerate(images):
         # security for type
+        if hasattr(img, "numpy"):
+            img = img.numpy()
+    
         if img.dtype != np.uint8:
             img = (img * 255).clip(0, 255).astype(np.uint8)
 
@@ -121,7 +124,6 @@ def save_images(section, images, nb_files, filename_prefix="img"):
         progress_bar.progress(progress, text=f"{progress_text} ({count}/{nb_files})")
 
     progress_bar.progress(1.0, text="Done ✅")
-
 
 
 def save_tf_records(section, ds, nb_files, batch_size, filename_prefix="data"):
@@ -165,11 +167,11 @@ def preprocess_files(section, uploaded_files):
         ]
         
     images = [load_image(f) for f in new_files]
+    nb_files = len(images)
+    save_images(section, images, nb_files)
+    
     images = [tf.convert_to_tensor(img) for img in images]
     labels = ["none" for i in range(0,len(images))]
-    nb_files = len(images)
-    
-    save_images(section, images, nb_files)
     
     model = get_preproc_model()
     ds = get_tf_dataset(model, images, labels)
