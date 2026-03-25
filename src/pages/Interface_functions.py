@@ -135,7 +135,7 @@ def save_images(section, images, nb_files, filename_prefix="img"):
 
         # saving
         img_path = temp_dir / f"{filename_prefix}_{idx:04d}.jpg"
-        pil_img.save(img_path, format="JPEG")
+        pil_img.save(img_path, format="PNG")
 
         count += 1
 
@@ -190,15 +190,16 @@ def preprocess_files(section, uploaded_files):
     save_images(section, images, nb_files)
     
     model = get_preproc_model()
-    st.write("Preproc load")
     ds = get_tf_dataset(model, nb_files)
     st.write("ds done")
     
     with st.spinner("Preprosessing images in progress...", show_time=True):
         preproc_img = get_clean_tfrecords(ds)
     
+    st.write("Preproc done")
     batch_size = st.session_state['config']['model']['batch_size']
     save_tf_records(section, ds, nb_files, batch_size)
+    st.write("record done")
     
     return preproc_img
     
@@ -213,7 +214,7 @@ def set_uploaded_data(section):
                  You can upload MRI files at jpg format. 
               '''
     uploaded_files = cntr.file_uploader("Upload your MRI", 
-                                       type=['jpg'],
+                                       type=['png, jpg'],
                                        help=help_msg, 
                                        accept_multiple_files=True,
                                        key=f"uploader_{st.session_state.uploader_key}")
