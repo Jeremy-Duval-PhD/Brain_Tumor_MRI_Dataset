@@ -104,7 +104,7 @@ def save_tf_records(section, images, nb_files, batch_size, filename_prefix="data
     progress_text = "Image preprocessing. Please wait."
     progress_bar = section.progress(0, text=progress_text)
 
-    lbl = "none"
+    lbl = tf.constant(0) # default value -> use only to compare prediction and reality during model creation
     for img in images:
         if count % batch_size == 0:
             if writer:
