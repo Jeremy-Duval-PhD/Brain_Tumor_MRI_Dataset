@@ -4,6 +4,7 @@ from pathlib import Path
 import yaml
 import tensorflow as tf
 from PIL import Image
+import tempfile
 
 
 def load_config(config_path: Path) -> dict:
@@ -67,21 +68,23 @@ def get_tf_dataset(preproc_model, images, labels):
     return ds
 
 
-def get_clean_tfrecords(ds):
-    def serialize_example(img, label):
-        img_bytes = tf.io.serialize_tensor(img).numpy()
+def serialize_example(img, label):
+    img_bytes = tf.io.serialize_tensor(img).numpy()
 
-        example = tf.train.Example(
-            features=tf.train.Features(feature={
-                "image": tf.train.Feature(
-                    bytes_list=tf.train.BytesList(value=[img_bytes])
-                ),
-                "label": tf.train.Feature(
-                    int64_list=tf.train.Int64List(value=[label.numpy()])
-                ),
-            })
-        )
-        return example.SerializeToString()
+    example = tf.train.Example(
+        features=tf.train.Features(feature={
+            "image": tf.train.Feature(
+                bytes_list=tf.train.BytesList(value=[img_bytes])
+            ),
+            "label": tf.train.Feature(
+                int64_list=tf.train.Int64List(value=[label.numpy()])
+            ),
+        })
+    )
+    return example.SerializeToString()
+
+
+def get_clean_tfrecords(ds):
 
     # Collect TFRecords in memory
     tfrecords = []
@@ -89,9 +92,38 @@ def get_clean_tfrecords(ds):
         tfrecords.append(serialize_example(img, lbl))
 
     return tfrecords
+
+
+def save_tf_records(section, images, nb_files, batch_size, filename_prefix="data"):
+    writer = None
+    count = 0
+    file_idx = 0
+    temp_dir = Path(tempfile.mkdtemp())
+    st.write(temp_dir)
+    st.session_state['temp_dir_raw'] = temp_dir
+    progress_text = "Image preprocessing. Please wait."
+    progress_bar = section.progress(0, text=progress_text)
+
+    lbl = "none"
+    for img in images:
+        if count % batch_size == 0:
+            if writer:
+                writer.close()
+            record_path = temp_dir / f"{filename_prefix}_{file_idx:03d}.tfrecord"
+            writer = tf.io.TFRecordWriter(str(record_path))
+            file_idx += 1
+        writer.write(serialize_example(img, lbl))
+        count += 1
+        
+        # update progress bar
+        progress = count / nb_files
+        progress_bar.progress(progress, text=f"{progress_text} ({count}/{nb_files})")
+
+    if writer:
+        writer.close()
     
     
-def preprocess_files(uploaded_files):    
+def preprocess_files(section, uploaded_files):    
     if 'clean_files' not in st.session_state:
         new_files = uploaded_files
     else:
@@ -104,8 +136,12 @@ def preprocess_files(uploaded_files):
     images = [tf.convert_to_tensor(img) for img in images]
     labels = ["none" for i in range(0,len(images))]
     
+    batch_size = st.session_state['config']['model']['batch_size']
+    save_tf_records(section, images, len(images), batch_size)
+    
     model = get_preproc_model()
     ds = get_tf_dataset(model, images, labels)
+    
     preproc_img = get_clean_tfrecords(ds)
     
     return preproc_img
@@ -134,7 +170,7 @@ def set_uploaded_data(section):
         if 'clean_files' not in st.session_state \
         or file_names != st.session_state['file_names']:
             init_session_state_var() 
-            clean_files = preprocess_files(uploaded_files)
+            clean_files = preprocess_files(section, uploaded_files)
             st.session_state['clean_files'] = clean_files
             st.session_state['file_names'] = file_names
         
