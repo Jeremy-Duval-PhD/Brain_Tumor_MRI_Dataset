@@ -59,7 +59,7 @@ def load_image(uploaded_file):
     return np.array(img)
 
 
-def build_df_from_uploaded(paths, labels=None):
+def build_df_from_uploaded(paths, nb_files, labels=None):
     """
     paths : list[str] → chemins des images sauvegardées
     labels : list[str] ou None
@@ -67,7 +67,7 @@ def build_df_from_uploaded(paths, labels=None):
 
     if labels is None:
         # default value -> use only to compare prediction and reality during model creation
-        labels = ["unknown"] * len(paths)
+        labels = ["unknown"] * nb_files
 
     return pd.DataFrame({
         "filepath": paths,
@@ -75,8 +75,8 @@ def build_df_from_uploaded(paths, labels=None):
     })
     
     
-def get_tf_dataset(preproc_model):
-    df = build_df_from_uploaded(st.session_state['temp_dir_raw'])
+def get_tf_dataset(preproc_model, nb_files):
+    df = build_df_from_uploaded(st.session_state['temp_dir_raw'], nb_files)
     st.write(df["filepath"].values)
     ds = tf.data.Dataset.from_tensor_slices((df["filepath"].values, df["label"].values))
     ds = ds.map(lambda img, lbl: preproc_model(img, lbl),
@@ -189,7 +189,7 @@ def preprocess_files(section, uploaded_files):
     
     model = get_preproc_model()
     st.write("Preproc load")
-    ds = get_tf_dataset(model)
+    ds = get_tf_dataset(model, nb_files)
     
     with st.spinner("Preprosessing images in progress...", show_time=True):
         preproc_img = get_clean_tfrecords(ds)
