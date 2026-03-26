@@ -8,8 +8,8 @@ import tempfile
 import pandas as pd
 from huggingface_hub import hf_hub_download
 from tensorflow.keras.models import load_model
-from src.models.use_model import run_medical_XAI_one_image, get_presence_explainer
-from src.models.use_model import load_tfrecord_dataset, split_labels
+from src.models.commons import run_medical_XAI_one_image, get_presence_explainer, \
+                               load_tfrecord_dataset, split_labels
 
 def load_config(config_path: Path) -> dict:
     if not config_path.exists():

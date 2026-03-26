@@ -28,6 +28,8 @@ from datetime import datetime
 import pandas as pd
 from sklearn.metrics import f1_score
 
+from commons import load_tfrecord_dataset, split_labels, parse_tfrecord
+
 
 # --- Logger Configuration ---
 LOG_DIR = Path("logs")
@@ -341,69 +343,6 @@ def get_model_built(img_size, models_dir, freeze_backbone, seed):
 
 
 """ Training """
-
-def parse_tfrecord(example_proto):
-    """
-    Parse a single TFRecord example and convert grayscale → RGB.
-    """
-    feature_description = {
-        "image": tf.io.FixedLenFeature([], tf.string),
-        "label": tf.io.FixedLenFeature([], tf.int64),
-    }
-
-    example = tf.io.parse_single_example(example_proto, feature_description)
-
-    # Deserialize image
-    image = tf.io.parse_tensor(example["image"], out_type=tf.float32)
-
-    # Shape after loading: (260, 260, 3)
-    image.set_shape((260, 260, 3))
-
-    label = tf.cast(example["label"], tf.int32)
-
-    return image, label
-
-
-
-def load_tfrecord_dataset(tfrecord_dir, shuffle=False, batch_size=1, repeat=False):
-    """
-    Load a TFRecord dataset from a directory.
-
-    Args:
-        tfrecord_dir (str or Path): Folder containing .tfrecord files
-        shuffle (bool): Whether to shuffle files and samples
-        batch_size (int): Batch size (can stay 1)
-        repeat (bool): Repeat dataset indefinitely (for training)
-
-    Returns:
-        tf.data.Dataset
-    """
-    tfrecord_files = tf.io.gfile.glob(
-        str(tfrecord_dir) + "/*.tfrecord"
-    )
-
-    ds = tf.data.TFRecordDataset(
-        tfrecord_files,
-        num_parallel_reads=tf.data.AUTOTUNE
-    )
-
-    ds = ds.map(
-        parse_tfrecord,
-        num_parallel_calls=tf.data.AUTOTUNE
-    )
-
-    if shuffle:
-        ds = ds.shuffle(buffer_size=512)
-
-    if repeat:
-        ds = ds.repeat()
-
-    ds = ds.batch(batch_size)
-    ds = ds.prefetch(tf.data.AUTOTUNE)
-
-    return ds
-
-
 def config_callbacks(checkpoint_dir, to_monitor = "val_tumor_type_loss", mode = "min"):
     reduce_lr = ReduceLROnPlateau(
         monitor=to_monitor,
@@ -729,17 +668,6 @@ def keep_best_epoch_finetuning(history):
 
 
 """ dataset preprox """
-def split_labels(image, label):
-    """
-    Create labels for a 2-head model.
-    """
-    tumor_present = tf.cast(label != 0, tf.float32)
-    tumor_type = tf.cast(label, tf.int32)
-
-    return image, {
-        "tumor_presence": tumor_present,
-        "tumor_type": tumor_type
-    }
 
 
 def get_datasets(processed_dir, dataset_name='Training', batch_size=32):
