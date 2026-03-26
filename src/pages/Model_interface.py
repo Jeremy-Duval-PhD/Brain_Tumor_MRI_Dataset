@@ -8,8 +8,6 @@ set_uploaded_data(st)
 
 st.divider()
 
-set_model_visualisation(st)
-
 details_expander = st.expander('Global metrics for interpretability')
 details_expander.markdown('''
             # Confidence intervals
@@ -96,3 +94,9 @@ conf_interval_class = pd.DataFrame(
     index=["Tumor presence", "Tumor type (glioma)", "Tumor type (meningioma)", "Tumor type (pituitary)"],
 )
 details_expander.table(conf_interval_class) 
+
+
+
+
+
+set_model_visualisation(st)

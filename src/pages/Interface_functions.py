@@ -6,6 +6,10 @@ import tensorflow as tf
 from PIL import Image
 import tempfile
 import pandas as pd
+from huggingface_hub import hf_hub_download
+from tensorflow.keras.models import load_model
+from src.models.use_model import run_medical_XAI_one_image, get_presence_explainer
+from src.models.use_model import load_tfrecord_dataset, split_labels
 
 def load_config(config_path: Path) -> dict:
     if not config_path.exists():
@@ -252,11 +256,117 @@ def set_uploaded_data(section):
         
         
         
-        
-        
+
+@st.cache_resource
+def load_model_from_hf():
+    model_path = hf_hub_download(
+        repo_id="Jeremy-Duval-PhD/Brain_Tumor_Detector",
+        filename="brain_tumor_model.keras"
+    )
+    return load_model(model_path)
+
+
+@st.cache_resource
+def load_background():
+    path = st.session_state['config']['path']['models_dir']
+    return np.load(path / "background.npy")
+
+
+def get_type_explainer_cache():
+    if 'type_explainers_cache' not in st.session_state:
+        st.session_state['type_explainers_cache'] = {}
+    return st.session_state['type_explainers_cache']
+
+
+def display_output_images(section):
+    if "temp_dir_output" not in st.session_state:
+        section.warning("No output directory found in session.")
+        return
+
+    img_dir = Path(st.session_state["temp_dir_output"])
+
+    if not img_dir.exists():
+        section.error(f"Directory does not exist: {img_dir}")
+        return
+
+    valid_ext = [".jpg", ".jpeg", ".png"]
+
+    image_paths = sorted([
+        p for p in img_dir.iterdir()
+        if p.suffix.lower() in valid_ext
+    ])
+
+    if not image_paths:
+        section.info("No images found in output directory.")
+        return
+
+    for img_path in image_paths:
+        try:
+            img = Image.open(img_path)
+
+            section.image(
+                img,
+                caption=img_path.name,
+                use_column_width=True  # prend toute la largeur
+            )
+
+        except Exception as e:
+            section.warning(f"Error loading {img_path.name}: {e}")
+            
+            
+def get_datasets_preprocs():
+    path = st.session_state['temp_dir_preproc']
+    
+    ds = load_tfrecord_dataset(
+        path,
+        shuffle=True,
+        batch_size=st.session_state['config']['model']['batch_size'],
+        repeat=False
+    ).prefetch(tf.data.AUTOTUNE)
+    
+    ds = ds.map(split_labels, num_parallel_calls=tf.data.AUTOTUNE)
+    
+    return ds
+
         
 def set_model_visualisation(section):
-    # TODO:
-    # Call model for all images
-    # Call visualiation for all images
-    pass
+    model = load_model_from_hf()
+    background_images = load_background()
+    explainer_presence = get_presence_explainer(model, background_images)
+    
+    temp_dir = Path(tempfile.mkdtemp())
+    st.session_state['temp_dir_output'] = temp_dir
+    
+    classes = st.session_state['config']['general']['classes']
+    type_explainers_cache = get_type_explainer_cache()
+    dataset = get_datasets_preprocs()
+    
+    progress_text = "MRI processing in progress. Please wait."
+    progress_bar = section.progress(0.0, text=progress_text)
+    count = 0
+    nb_files = len(st.session_state['file_names'])
+    for x_batch, _ in dataset:
+        for img in x_batch:
+            st.session_state['type_explainers_cache'] = run_medical_XAI_one_image(\
+                                      img, \
+                                      model, \
+                                      background_images, \
+                                      explainer_presence, \
+                                      st.session_state['temp_dir_output'], \
+                                      classes, \
+                                      type_explainers_cache)
+            
+            # update progress
+            count += 1
+            progress = count / nb_files
+            progress_bar.progress(progress, text=f"{progress_text} ({count}/{nb_files})")
+
+    progress_bar.progress(1.0, text="MRI processing done ✅")
+    
+    display_output_images(section)
+
+
+
+
+
+

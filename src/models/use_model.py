@@ -1037,14 +1037,14 @@ def get_explanations_for_confusion_mtrx_type(
 
 
 def run_medical_XAI_one_image(img, model, background_images, explainer_presence, \
-                              output_dir, classes, type_explainers_cache={}):
+                              output_dir, classes, type_explainers_cache={}, true_label=None):
     _ = visualize_explanations(
         model,
         img,
         background_images,
         explainer_presence,
         head="tumor_presence",
-        true_label=1,
+        true_label=true_label,
         classes=["no_tumor", "tumor"],
         path=output_dir
     )
@@ -1054,7 +1054,7 @@ def run_medical_XAI_one_image(img, model, background_images, explainer_presence,
         img,
         background_images,
         head="tumor_type",
-        true_label=2,
+        true_label=true_label,
         classes=classes,
         path=output_dir,
         type_explainers_cache=type_explainers_cache
