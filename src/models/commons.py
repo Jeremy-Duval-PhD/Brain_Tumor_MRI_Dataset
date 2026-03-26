@@ -511,11 +511,12 @@ def visualize_explanations(
     return type_explainers_cache
 
 
-def run_medical_XAI_one_image(img, model, background_images, explainer_presence, \
+def run_medical_XAI_one_image(img, img_size, model, background_images, explainer_presence, \
                               output_dir, classes, type_explainers_cache={}, true_label=None):
     _ = visualize_explanations(
         model,
         img,
+        img_size,
         background_images,
         explainer_presence,
         head="tumor_presence",
@@ -527,6 +528,7 @@ def run_medical_XAI_one_image(img, model, background_images, explainer_presence,
     type_explainers_cache = visualize_explanations(
         model,
         img,
+        img_size,
         background_images,
         head="tumor_type",
         true_label=true_label,

@@ -625,7 +625,7 @@ def run_medical_XAI_pipeline(model, dataset, config, type_explainers_cache={}):
             if count >= nb_img_shap:
                 break
             img = img.numpy()
-            type_explainers_cache = run_medical_XAI_one_image(img, model,\
+            type_explainers_cache = run_medical_XAI_one_image(img, img_size, model,\
                                           background_images, explainer_presence, \
                                           output_dir, classes, type_explainers_cache)
             count+=1
