@@ -336,6 +336,7 @@ def get_datasets_preprocs():
 
         
 def set_model_visualisation(section):
+    set_config()
     model = rebuild_model()
     background_images = load_background()
     explainer_presence = get_presence_explainer(model, background_images)
