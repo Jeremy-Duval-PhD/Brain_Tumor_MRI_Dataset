@@ -6,7 +6,7 @@ import tensorflow as tf
 from PIL import Image
 import tempfile
 import pandas as pd
-from model_archi import get_model_built
+from src.models.model_archi import get_model_built
 from src.models.commons import run_medical_XAI_one_image, get_presence_explainer, \
                                load_tfrecord_dataset, split_labels
 
