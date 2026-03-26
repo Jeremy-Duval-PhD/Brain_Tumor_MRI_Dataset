@@ -272,7 +272,7 @@ def rebuild_model():
         seed=seed
     )
     
-    model.load_weights(model_dir / "brain_tumor_heads.weights.h5")
+    model.load_weights(model_dir+"brain_tumor_heads.weights.h5")
     
     return model
 
@@ -280,7 +280,7 @@ def rebuild_model():
 @st.cache_resource
 def load_background():
     path = st.session_state['config']['path']['models_dir']
-    return np.load(path / "background.npy")
+    return np.load(path + "background.npy")
 
 
 def get_type_explainer_cache():
