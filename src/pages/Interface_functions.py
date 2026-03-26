@@ -288,8 +288,28 @@ def rebuild_model(config):
 
 @st.cache_resource
 def load_background():
-    path = st.session_state['config']['path']['models_dir']
-    st.write(path)
+    path = Path(st.session_state['config']['path']['models_dir'])
+    
+    st.write("📁 Path:", path)
+    
+    if not path.exists():
+        st.error("❌ Path does not exist")
+        return None
+
+    files = list(path.iterdir())
+    
+    st.write("📂 Files in directory:")
+    for f in files:
+        st.write("-", f.name)
+
+    bg_path = path / "background.npy"
+    
+    if not bg_path.exists():
+        st.error(f"❌ background.npy not found at {bg_path}")
+        return None
+
+    st.success("✅ background.npy found")
+    
     return np.load(path + "background.npy")
 
 
@@ -356,6 +376,7 @@ def set_model_visualisation(section):
     if 'file_names' in st.session_state and st.session_state['file_names']:
         model = rebuild_model(st.session_state['config'])
         background_images = load_background()
+        st.write(f'back sh = {background_images.shape}')
         explainer_presence = get_presence_explainer(model, background_images)
         
         classes = st.session_state['config']['general']['classes']
