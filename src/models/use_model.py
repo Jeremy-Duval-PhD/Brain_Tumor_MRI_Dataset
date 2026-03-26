@@ -673,6 +673,7 @@ def main():
     debug = config["general"]["debug"]
     img_size = config["data_preprocessing"]["img_size"]
     model_dir = config["model"]["models_dir"]
+    seed = config["general"]["seed"]
     
     processed_dir = config["path"]["processed_dir"]
     batch_size = config["model"]["batch_size"]
@@ -683,7 +684,8 @@ def main():
     model = get_model_built(
         img_size,
         model_dir,
-        freeze_backbone=False
+        freeze_backbone=False,
+        seed=seed
     )
     
     model.load_weights(os.path.join(model_dir, "brain_tumor_heads.weights.h5"))

@@ -263,11 +263,13 @@ def set_uploaded_data(section):
 def rebuild_model():
     img_size = st.session_state['config']['data_preprocessing']['img_size']
     model_dir = st.session_state['config']['path']['models_dir']
+    seed = st.session_state['config']['general']['seed']
     
     model = get_model_built(
         img_size,
         model_dir,
-        freeze_backbone=False
+        freeze_backbone=False,
+        seed=seed
     )
     
     model.load_weights(model_dir / "brain_tumor_heads.weights.h5")
