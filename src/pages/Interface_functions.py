@@ -351,37 +351,39 @@ def get_datasets_preprocs():
         
 def set_model_visualisation(section):
     init_session_state_var()
-    model = rebuild_model(st.session_state['config'])
-    background_images = load_background()
-    explainer_presence = get_presence_explainer(model, background_images)
     
-    classes = st.session_state['config']['general']['classes']
-    type_explainers_cache = get_type_explainer_cache()
-    dataset = get_datasets_preprocs()
+    if 'file_names' in st.session_state and st.session_state['file_names']:
+        model = rebuild_model(st.session_state['config'])
+        background_images = load_background()
+        explainer_presence = get_presence_explainer(model, background_images)
+        
+        classes = st.session_state['config']['general']['classes']
+        type_explainers_cache = get_type_explainer_cache()
+        dataset = get_datasets_preprocs()
+        
+        progress_text = "MRI processing in progress. Please wait."
+        progress_bar = section.progress(0.0, text=progress_text)
+        count = 0
+        nb_files = len(st.session_state['file_names'])
+        for x_batch, _ in dataset:
+            for img in x_batch:
+                st.session_state['type_explainers_cache'] = run_medical_XAI_one_image(\
+                                          img, \
+                                          model, \
+                                          background_images, \
+                                          explainer_presence, \
+                                          st.session_state['temp_dir_output'], \
+                                          classes, \
+                                          type_explainers_cache)
+                
+                # update progress
+                count += 1
+                progress = count / nb_files
+                progress_bar.progress(progress, text=f"{progress_text} ({count}/{nb_files})")
     
-    progress_text = "MRI processing in progress. Please wait."
-    progress_bar = section.progress(0.0, text=progress_text)
-    count = 0
-    nb_files = len(st.session_state['file_names'])
-    for x_batch, _ in dataset:
-        for img in x_batch:
-            st.session_state['type_explainers_cache'] = run_medical_XAI_one_image(\
-                                      img, \
-                                      model, \
-                                      background_images, \
-                                      explainer_presence, \
-                                      st.session_state['temp_dir_output'], \
-                                      classes, \
-                                      type_explainers_cache)
-            
-            # update progress
-            count += 1
-            progress = count / nb_files
-            progress_bar.progress(progress, text=f"{progress_text} ({count}/{nb_files})")
-
-    progress_bar.progress(1.0, text="MRI processing done ✅")
-    
-    display_output_images(section)
+        progress_bar.progress(1.0, text="MRI processing done ✅")
+        
+        display_output_images(section)
 
 
 
