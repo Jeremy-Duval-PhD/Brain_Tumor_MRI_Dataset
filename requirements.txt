@@ -6,4 +6,5 @@ pillow==10.2.0
 PyYAML==6.0.3
 pandas==2.3.3
 huggingface_hub==1.7.2
+scikit-learn==1.7.2
 
