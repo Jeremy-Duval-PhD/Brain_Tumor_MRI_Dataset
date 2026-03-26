@@ -310,7 +310,7 @@ def load_background():
 
     st.success("✅ background.npy found")
     
-    return np.load(path + "background.npy")
+    return np.load(path / "background.npy")
 
 
 def get_type_explainer_cache():
