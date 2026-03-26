@@ -289,6 +289,7 @@ def rebuild_model(config):
 @st.cache_resource
 def load_background():
     path = st.session_state['config']['path']['models_dir']
+    st.write(path)
     return np.load(path + "background.npy")
 
 
