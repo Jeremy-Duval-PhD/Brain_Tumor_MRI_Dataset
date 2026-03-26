@@ -19,6 +19,9 @@ def load_config(config_path: Path) -> dict:
 
 
 def set_config():
+    if 'config_path' not in st.session_state:
+        init_session_state_var()
+    
     if 'config' not in st.session_state:
         st.session_state['config'] = load_config(st.session_state['config_path'])
 
