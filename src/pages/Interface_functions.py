@@ -16,18 +16,11 @@ def load_config(config_path: Path) -> dict:
     with open(config_path, "r") as f:
         config = yaml.safe_load(f)
     return config
-
-
-def set_config():
-    if 'config_path' not in st.session_state:
-        init_session_state_var()
     
-    if 'config' not in st.session_state:
-        st.session_state['config'] = load_config(st.session_state['config_path'])
 
 @st.cache_resource
 def get_preproc_model():
-    set_config()
+    init_session_state_var()
     return tf.saved_model.load(str(st.session_state['artefact_dir']))
 
 
@@ -48,14 +41,34 @@ def session_clear():
 def init_session_state_var():
     if 'clean_files' not in st.session_state:
         st.session_state['clean_files'] = []
+        
     if 'file_names' not in st.session_state:
         st.session_state['file_names'] = []
+        
     if 'project_root' not in st.session_state:
         st.session_state['project_root'] = Path(__file__).resolve().parents[2]
+    
+    if 'config_path' not in st.session_state:
         st.session_state['config_path'] = st.session_state['project_root'] / "config.yaml"
-        set_config()
+    
+    if 'config' not in st.session_state:
+        st.session_state['config'] = load_config(st.session_state['config_path'])
+        
+    if 'artefact_dir' not in st.session_state:
         st.session_state['artefact_dir'] = \
-            st.session_state['project_root'] / st.session_state['config']["path"]["models_dir"] / "preproc_pipeline"
+        st.session_state['project_root'] / st.session_state['config']["path"]["models_dir"] / "preproc_pipeline"
+        
+    if 'temp_dir_raw' not in st.session_state:
+        temp_dir = Path(tempfile.mkdtemp())
+        st.session_state['temp_dir_raw'] = temp_dir
+        
+    if 'temp_dir_preproc' not in st.session_state:
+        temp_dir = Path(tempfile.mkdtemp())
+        st.session_state['temp_dir_preproc'] = temp_dir
+        
+    if 'temp_dir_output' not in st.session_state:
+        temp_dir = Path(tempfile.mkdtemp())
+        st.session_state['temp_dir_output'] = temp_dir
     
     
 def load_image(uploaded_file):
@@ -136,8 +149,6 @@ def get_clean_tfrecords(ds):
 
 def save_images(section, images, nb_files, filename_prefix="img"):
     count = 0
-    temp_dir = Path(tempfile.mkdtemp())
-    st.session_state['temp_dir_raw'] = temp_dir
 
     progress_text = "Saving images. Please wait."
     progress_bar = section.progress(0.0, text=progress_text)
@@ -154,7 +165,7 @@ def save_images(section, images, nb_files, filename_prefix="img"):
         pil_img = Image.fromarray(img)
 
         # saving
-        img_path = temp_dir / f"{filename_prefix}_{idx:04d}.jpg"
+        img_path = st.session_state['temp_dir_raw'] / f"{filename_prefix}_{idx:04d}.jpg"
         pil_img.save(img_path, format="PNG")
 
         count += 1
@@ -170,8 +181,6 @@ def save_tf_records(section, ds, nb_files, batch_size, filename_prefix="data"):
     writer = None
     count = 0
     file_idx = 0
-    temp_dir = Path(tempfile.mkdtemp())
-    st.session_state['temp_dir_preproc'] = temp_dir
     
     progress_text = "Saving images. Please wait."
     progress_bar = section.progress(0, text=progress_text)
@@ -180,7 +189,7 @@ def save_tf_records(section, ds, nb_files, batch_size, filename_prefix="data"):
         if count % batch_size == 0:
             if writer:
                 writer.close()
-            record_path = temp_dir / f"{filename_prefix}_{file_idx:03d}.tfrecord"
+            record_path = st.session_state['temp_dir_preproc'] / f"{filename_prefix}_{file_idx:03d}.tfrecord"
             writer = tf.io.TFRecordWriter(str(record_path))
             file_idx += 1
         writer.write(serialize_example(img, lbl))
@@ -260,10 +269,10 @@ def set_uploaded_data(section):
         
 
 @st.cache_resource
-def rebuild_model():
-    img_size = st.session_state['config']['data_preprocessing']['img_size']
-    model_dir = st.session_state['config']['path']['models_dir']
-    seed = st.session_state['config']['general']['seed']
+def rebuild_model(config):
+    img_size = config['data_preprocessing']['img_size']
+    model_dir = config['path']['models_dir']
+    seed = config['general']['seed']
     
     model = get_model_built(
         img_size,
@@ -341,13 +350,10 @@ def get_datasets_preprocs():
 
         
 def set_model_visualisation(section):
-    set_config()
-    model = rebuild_model()
+    init_session_state_var()
+    model = rebuild_model(st.session_state['config'])
     background_images = load_background()
     explainer_presence = get_presence_explainer(model, background_images)
-    
-    temp_dir = Path(tempfile.mkdtemp())
-    st.session_state['temp_dir_output'] = temp_dir
     
     classes = st.session_state['config']['general']['classes']
     type_explainers_cache = get_type_explainer_cache()
