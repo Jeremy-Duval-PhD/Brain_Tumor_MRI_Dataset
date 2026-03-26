@@ -14,19 +14,17 @@ import logging
 from pathlib import Path
 import numpy as np
 
-import tensorflow as tf
-
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, f1_score, accuracy_score, precision_score, recall_score
 from sklearn.calibration import calibration_curve
 from sklearn.metrics import brier_score_loss
 
 from scipy.stats import norm
-import shap
 
 import matplotlib.pyplot as plt
 import random
 
-from make_model import get_model_built, setup_tensorflow, get_datasets
+from model_archi import get_model_built
+from make_model import setup_tensorflow, get_datasets
 from commons import run_medical_XAI_one_image, get_presence_explainer, visualize_explanations
 
 

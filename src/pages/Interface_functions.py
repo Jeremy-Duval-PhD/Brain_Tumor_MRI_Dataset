@@ -6,8 +6,7 @@ import tensorflow as tf
 from PIL import Image
 import tempfile
 import pandas as pd
-from huggingface_hub import hf_hub_download
-from tensorflow.keras.models import load_model
+from model_archi import get_model_built
 from src.models.commons import run_medical_XAI_one_image, get_presence_explainer, \
                                load_tfrecord_dataset, split_labels
 
@@ -258,12 +257,19 @@ def set_uploaded_data(section):
         
 
 @st.cache_resource
-def load_model_from_hf():
-    model_path = hf_hub_download(
-        repo_id="Jeremy-Duval-PhD/Brain_Tumor_Detector",
-        filename="brain_tumor_model.keras"
+def rebuild_model():
+    img_size = st.session_state['config']['data_preprocessing']['img_size']
+    model_dir = st.session_state['config']['path']['models_dir']
+    
+    model = get_model_built(
+        img_size,
+        model_dir,
+        freeze_backbone=False
     )
-    return load_model(model_path)
+    
+    model.load_weights(model_dir / "brain_tumor_heads.weights.h5")
+    
+    return model
 
 
 @st.cache_resource
@@ -330,7 +336,7 @@ def get_datasets_preprocs():
 
         
 def set_model_visualisation(section):
-    model = load_model_from_hf()
+    model = rebuild_model()
     background_images = load_background()
     explainer_presence = get_presence_explainer(model, background_images)
     
