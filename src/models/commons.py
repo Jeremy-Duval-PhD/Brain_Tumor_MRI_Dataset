@@ -82,8 +82,6 @@ def load_tfrecord_dataset(tfrecord_dir, shuffle=False, batch_size=1, repeat=Fals
 
 
 def normalize_for_display(img):
-    import streamlit as st
-    st.write(type(img))
     img = img.astype(np.float32)
     img = img - img.min()
     img = img / (img.max() + 1e-8)
