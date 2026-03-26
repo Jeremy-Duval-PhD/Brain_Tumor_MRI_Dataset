@@ -368,7 +368,7 @@ def set_model_visualisation(section):
         for x_batch, _ in dataset:
             for img in x_batch:
                 st.session_state['type_explainers_cache'] = run_medical_XAI_one_image(\
-                                          img[0].numpy(), \
+                                          img.numpy(), \
                                           model, \
                                           background_images, \
                                           explainer_presence, \
