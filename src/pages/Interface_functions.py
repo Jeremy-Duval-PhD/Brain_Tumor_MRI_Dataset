@@ -362,8 +362,6 @@ def set_model_visualisation(section):
         model = rebuild_model(json.dumps(st.session_state['config'], sort_keys=True))
         background_images = load_background()
         explainer_presence = get_presence_explainer(model, background_images)
-        st.write(f'back sh = {background_images.shape}')
-        st.write(explainer_presence)
         
         classes = st.session_state['config']['general']['classes']
         type_explainers_cache = get_type_explainer_cache()
@@ -383,7 +381,8 @@ def set_model_visualisation(section):
                                           explainer_presence, \
                                           st.session_state['temp_dir_output'], \
                                           classes, \
-                                          type_explainers_cache)
+                                          type_explainers_cache,
+                                          low_memory=True)
                 
                 # update progress
                 count += 1

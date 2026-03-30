@@ -4,6 +4,7 @@ import shap
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
+import warnings
 
 
 
@@ -394,9 +395,14 @@ def visualize_explanations(
     true_label=None,
     classes=None,
     path="",
-    type_explainers_cache={}
+    type_explainers_cache={},
+    low_memory=False
 ):
-
+    
+    if low_memory:
+        nsamples=10
+        warnings.warn(f"Reducing nsamples to {nsamples} due to low memory.")
+    
     img_display = normalize_for_display(img)
 
     # ----------------
@@ -512,7 +518,8 @@ def visualize_explanations(
 
 
 def run_medical_XAI_one_image(img, img_size, model, background_images, explainer_presence, \
-                              output_dir, classes, type_explainers_cache={}, true_label=None):
+                              output_dir, classes, type_explainers_cache={}, true_label=None,\
+                              low_memory=False):
     _ = visualize_explanations(
         model,
         img,
@@ -522,7 +529,8 @@ def run_medical_XAI_one_image(img, img_size, model, background_images, explainer
         head="tumor_presence",
         true_label=true_label,
         classes=["no_tumor", "tumor"],
-        path=output_dir
+        path=output_dir,
+        low_memory=low_memory
     )
     
     type_explainers_cache = visualize_explanations(
@@ -534,7 +542,8 @@ def run_medical_XAI_one_image(img, img_size, model, background_images, explainer
         true_label=true_label,
         classes=classes,
         path=output_dir,
-        type_explainers_cache=type_explainers_cache
+        type_explainers_cache=type_explainers_cache,
+        low_memory=low_memory
     )
     
     return type_explainers_cache
