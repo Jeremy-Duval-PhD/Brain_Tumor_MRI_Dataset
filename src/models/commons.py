@@ -395,6 +395,7 @@ def visualize_explanations(
     true_label=None,
     classes=None,
     path="",
+    img_id="",
     type_explainers_cache={},
     low_memory=False
 ):
@@ -518,16 +519,17 @@ def visualize_explanations(
     plt.suptitle(title_text, fontsize=14)
     plt.tight_layout()
     
+    name = str(img_id).replace("\n", "_").replace(" ", "_")
     safe_name = title_text.replace("\n", "_").replace(" ", "_")
-    safe_name = safe_name + ".png"
-    plt.savefig(path / safe_name)
+    name = name + safe_name + ".png"
+    plt.savefig(path / name)
     
     return type_explainers_cache
 
 
 def run_medical_XAI_one_image(img, img_size, model, background_images, explainer_presence, \
                               output_dir, classes, type_explainers_cache={}, true_label=None,\
-                              low_memory=False):
+                              img_id="", low_memory=False):
     _ = visualize_explanations(
         model,
         img,
@@ -538,7 +540,8 @@ def run_medical_XAI_one_image(img, img_size, model, background_images, explainer
         true_label=true_label,
         classes=["no_tumor", "tumor"],
         path=output_dir,
-        low_memory=low_memory
+        low_memory=low_memory,
+        img_id=img_id
     )
     
     type_explainers_cache = visualize_explanations(
@@ -551,7 +554,8 @@ def run_medical_XAI_one_image(img, img_size, model, background_images, explainer
         classes=classes,
         path=output_dir,
         type_explainers_cache=type_explainers_cache,
-        low_memory=low_memory
+        low_memory=low_memory,
+        img_id=img_id
     )
     
     return type_explainers_cache

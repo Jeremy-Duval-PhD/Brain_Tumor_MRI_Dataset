@@ -374,6 +374,8 @@ def set_model_visualisation(section):
         nb_files = len(st.session_state['file_names'])
         for x_batch, _ in dataset:
             for img in x_batch:
+                st.write(img)
+                st.write(st.session_state['file_names'][count])
                 st.session_state['type_explainers_cache'] = run_medical_XAI_one_image(\
                                           img.numpy(), \
                                           st.session_state['config']['data_preprocessing']['img_size'], \
@@ -383,7 +385,8 @@ def set_model_visualisation(section):
                                           st.session_state['temp_dir_output'], \
                                           classes, \
                                           type_explainers_cache,
-                                          low_memory=True)
+                                          low_memory=True,
+                                          img_id=count)
                 
                 # update progress
                 count += 1
