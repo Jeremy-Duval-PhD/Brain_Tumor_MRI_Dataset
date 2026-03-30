@@ -400,7 +400,7 @@ def visualize_explanations(
 ):
     
     if low_memory:
-        nsamples=10
+        nsamples=5
         warnings.warn(f"Reducing nsamples to {nsamples} due to low memory.")
     
     img_display = normalize_for_display(img)
@@ -490,6 +490,13 @@ def visualize_explanations(
             )
 
     shap_map = compute_shap_map(shap_values, img_size)
+    
+    if low_memory:
+        std = round(shap_map.std(),4)
+        if std == 0:
+            warnings.warn(f"SHAP can't explane anything due to low samples (SHAP std = {std}")
+        else:
+            print(std)
 
     shap_overlay = overlay_gradcam(img_display, shap_map)
 
