@@ -387,7 +387,7 @@ def set_model_visualisation(section):
                                           presence_cat=presence_cat,\
                                           type_explainers_cache=type_explainers_cache,
                                           low_memory=True,
-                                          img_id=st.session_state['file_names'][count])
+                                          img_id=st.session_state['file_names'][count].split('.')[0])
                 
                 # update progress
                 count += 1
