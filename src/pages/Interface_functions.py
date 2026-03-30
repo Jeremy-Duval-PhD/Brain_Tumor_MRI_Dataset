@@ -374,10 +374,7 @@ def set_model_visualisation(section):
         nb_files = len(st.session_state['file_names'])
         for x_batch, _ in dataset:
             for img in x_batch:
-                st.write(img)
-                st.write(st.session_state['file_names'][count])
-                
-                explainer_presence = get_presence_explainer(model, background_images.copy())
+                explainer_presence = get_presence_explainer(model, background_images.copy()) # in loop to avoid bug and help shap
                 
                 st.session_state['type_explainers_cache'] = run_medical_XAI_one_image(\
                                           img.numpy(), \
@@ -390,7 +387,7 @@ def set_model_visualisation(section):
                                           presence_cat=presence_cat,\
                                           type_explainers_cache=type_explainers_cache,
                                           low_memory=True,
-                                          img_id=count)
+                                          img_id=st.session_state['file_names'][count])
                 
                 # update progress
                 count += 1
