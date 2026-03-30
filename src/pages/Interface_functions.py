@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 from pathlib import Path
 import yaml
+import json
 import tensorflow as tf
 from PIL import Image
 import tempfile
@@ -269,7 +270,12 @@ def set_uploaded_data(section):
         
 
 @st.cache_resource
-def rebuild_model(config):
+def rebuild_model(config_str):
+    config = json.loads(config_str)
+    
+    tf.keras.backend.clear_session()
+    st.write("REBUILDING MODEL")
+    
     img_size = config['data_preprocessing']['img_size']
     model_dir = config['path']['models_dir']
     seed = config['general']['seed']
@@ -353,7 +359,7 @@ def set_model_visualisation(section):
     init_session_state_var()
     
     if 'file_names' in st.session_state and st.session_state['file_names']:
-        model = rebuild_model(st.session_state['config'])
+        model = rebuild_model(json.dumps(st.session_state['config'], sort_keys=True))
         background_images = load_background()
         explainer_presence = get_presence_explainer(model, background_images)
         st.write(f'back sh = {background_images.shape}')
