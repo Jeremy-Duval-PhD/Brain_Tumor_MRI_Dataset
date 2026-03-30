@@ -362,9 +362,9 @@ def set_model_visualisation(section):
     if 'file_names' in st.session_state and st.session_state['file_names']:
         model = rebuild_model(json.dumps(st.session_state['config'], sort_keys=True))
         background_images = load_background()
-        explainer_presence = get_presence_explainer(model, background_images)
         
         classes = st.session_state['config']['general']['classes']
+        presence_cat = st.session_state['config']['general']['presence_cat']
         type_explainers_cache = get_type_explainer_cache()
         dataset = get_datasets_preprocs()
         
@@ -376,6 +376,9 @@ def set_model_visualisation(section):
             for img in x_batch:
                 st.write(img)
                 st.write(st.session_state['file_names'][count])
+                
+                explainer_presence = get_presence_explainer(model, background_images.copy())
+                
                 st.session_state['type_explainers_cache'] = run_medical_XAI_one_image(\
                                           img.numpy(), \
                                           st.session_state['config']['data_preprocessing']['img_size'], \
@@ -384,7 +387,8 @@ def set_model_visualisation(section):
                                           explainer_presence, \
                                           st.session_state['temp_dir_output'], \
                                           classes, \
-                                          type_explainers_cache,
+                                          presence_cat=presence_cat,\
+                                          type_explainers_cache=type_explainers_cache,
                                           low_memory=True,
                                           img_id=count)
                 
@@ -393,7 +397,7 @@ def set_model_visualisation(section):
                 progress = count / nb_files
                 progress_bar.progress(progress, text=f"{progress_text} ({count}/{nb_files})")
                 
-            gc.collect()
+                gc.collect()
     
         progress_bar.progress(1.0, text="MRI processing done ✅")
         

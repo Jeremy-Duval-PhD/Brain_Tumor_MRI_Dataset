@@ -384,6 +384,46 @@ def compute_shap_map(shap_values, img_size):
     return shap_map
 
 
+def get_shap_values(pred,
+                    model,
+                    img,
+                    background_images,
+                    explainer_presence=None,
+                    type_explainers_cache={},
+                    head="tumor_presence",
+                    nsamples=100,
+                    low_memory=False):
+    
+    if low_memory:
+        nsamples=5
+        warnings.warn(f"Reducing nsamples to {nsamples} due to low memory.")
+
+    if head == "tumor_presence":
+        with tf.device("/CPU:0"):
+            shap_values = explainer_presence.shap_values(
+                img[np.newaxis,...],
+                nsamples=nsamples
+            )
+    
+    else:
+        pred_class = int(np.argmax(pred["tumor_type"][0]))
+    
+        explainer_type, type_explainers_cache = get_type_explainer(
+            model,
+            background_images,
+            pred_class,
+            type_explainers_cache=type_explainers_cache
+        )
+    
+        with tf.device("/CPU:0"):
+            shap_values = explainer_type.shap_values(
+                img[np.newaxis,...],
+                nsamples=nsamples
+            )
+            
+    return shap_values , type_explainers_cache
+
+
 def visualize_explanations(
     model,
     img,
@@ -399,10 +439,6 @@ def visualize_explanations(
     type_explainers_cache={},
     low_memory=False
 ):
-    
-    if low_memory:
-        nsamples=5
-        warnings.warn(f"Reducing nsamples to {nsamples} due to low memory.")
     
     img_display = normalize_for_display(img)
 
@@ -466,29 +502,16 @@ def visualize_explanations(
     # ----------------
     # SHAP
     # ----------------
-    if head == "tumor_presence":
-
-        with tf.device("/CPU:0"):
-            shap_values = explainer_presence.shap_values(
-                img[np.newaxis,...],
-                nsamples=nsamples
-            )
-
-    else:
-        pred_class = int(np.argmax(pred["tumor_type"][0]))
-
-        explainer_type, type_explainers_cache = get_type_explainer(
-            model,
-            background_images,
-            pred_class,
-            type_explainers_cache=type_explainers_cache
-        )
-
-        with tf.device("/CPU:0"):
-            shap_values = explainer_type.shap_values(
-                img[np.newaxis,...],
-                nsamples=nsamples
-            )
+    
+    shap_values , type_explainers_cache = get_shap_values(pred,
+                                model,
+                                img,
+                                background_images,
+                                explainer_presence=explainer_presence,
+                                type_explainers_cache=type_explainers_cache,
+                                head=head,
+                                nsamples=nsamples,
+                                low_memory=low_memory)
 
     shap_map = compute_shap_map(shap_values, img_size)
     
@@ -528,7 +551,8 @@ def visualize_explanations(
 
 
 def run_medical_XAI_one_image(img, img_size, model, background_images, explainer_presence, \
-                              output_dir, classes, type_explainers_cache={}, true_label=None,\
+                              output_dir, classes, presence_cat=["no_tumor", "tumor"],\
+                              type_explainers_cache={}, true_label=None,\
                               img_id="", low_memory=False):
     _ = visualize_explanations(
         model,
@@ -538,7 +562,7 @@ def run_medical_XAI_one_image(img, img_size, model, background_images, explainer
         explainer_presence,
         head="tumor_presence",
         true_label=true_label,
-        classes=["no_tumor", "tumor"],
+        classes=presence_cat,
         path=output_dir,
         low_memory=low_memory,
         img_id=img_id
