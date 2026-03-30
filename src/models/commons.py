@@ -491,12 +491,13 @@ def visualize_explanations(
 
     shap_map = compute_shap_map(shap_values, img_size)
     
+    import streamlit as st
     if low_memory:
         std = round(shap_map.std(),4)
         if std == 0:
-            warnings.warn(f"SHAP can't explane anything due to low samples (SHAP std = {std}")
+            st.write(f"SHAP can't explane anything due to low samples (SHAP std = {std}")
         else:
-            print(std)
+            st.write(f"std={std}")
 
     shap_overlay = overlay_gradcam(img_display, shap_map)
 

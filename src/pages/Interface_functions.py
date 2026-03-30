@@ -3,6 +3,7 @@ import numpy as np
 from pathlib import Path
 import yaml
 import json
+import gc
 import tensorflow as tf
 from PIL import Image
 import tempfile
@@ -388,6 +389,8 @@ def set_model_visualisation(section):
                 count += 1
                 progress = count / nb_files
                 progress_bar.progress(progress, text=f"{progress_text} ({count}/{nb_files})")
+                
+            gc.collect()
     
         progress_bar.progress(1.0, text="MRI processing done ✅")
         
