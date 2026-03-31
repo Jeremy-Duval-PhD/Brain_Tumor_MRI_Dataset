@@ -445,7 +445,7 @@ def set_model_visualisation(section):
                     
                     for warning in w:
                         if issubclass(warning.category, StdSHAPWarning):
-                            msg = f"SHAP failed for {img_id}. {warning} This can occur if 'low_memory' is selected or if 'nsamples' is low."
+                            msg = f"SHAP failed for {img_id}. {warning['message']} This can occur if 'low_memory' is selected or if 'nsamples' is low."
                             section.warning(msg, icon="🚨")
                 
                 # update progress
@@ -459,6 +459,7 @@ def set_model_visualisation(section):
         
         display_output_images(section)
         
+        # ADD FORM TO DOWLOAD HERE OR TO VALIDATE ; THEN ACTIVATE THIS
         reactivate_form() # re activate file uploader
 
 
