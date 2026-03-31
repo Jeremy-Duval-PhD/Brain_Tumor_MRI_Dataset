@@ -11,7 +11,7 @@ import pandas as pd
 import warnings
 from src.models.model_archi import get_model_built
 from src.models.commons import run_medical_XAI_one_image, get_presence_explainer, \
-                               load_tfrecord_dataset, split_labels
+                               load_tfrecord_dataset, split_labels, StdSHAPWarning
 
 def load_config(config_path: Path) -> dict:
     if not config_path.exists():
@@ -444,8 +444,9 @@ def set_model_visualisation(section):
                                               img_id=img_id)
                     
                     for warning in w:
-                        msg = f"SHAP failed for {img_id}. {w} This can occur if 'low_memory' is selected or if 'nsamples' is low."
-                        section.warning(msg, icon="🚨")
+                        if issubclass(warning.category, StdSHAPWarning):
+                            msg = f"SHAP failed for {img_id}. {warning} This can occur if 'low_memory' is selected or if 'nsamples' is low."
+                            section.warning(msg, icon="🚨")
                 
                 # update progress
                 count += 1

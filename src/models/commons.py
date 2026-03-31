@@ -6,7 +6,8 @@ import numpy as np
 import cv2
 import warnings
 
-
+class StdSHAPWarning(UserWarning):
+    pass
 
 def split_labels(image, label):
     """
@@ -519,7 +520,7 @@ def visualize_explanations(
         std = round(shap_map.std(),4)
         std=0
         if std == 0:
-            warnings.warn(f"SHAP can't explane anything due to low samples (SHAP std = {std}", UserWarning())
+            warnings.warn(f"SHAP can't explane anything due to low samples (SHAP std = {std}", StdSHAPWarning)
 
     shap_overlay = overlay_gradcam(img_display, shap_map)
 
