@@ -8,6 +8,7 @@ import tensorflow as tf
 from PIL import Image
 import tempfile
 import pandas as pd
+import warnings
 from src.models.model_archi import get_model_built
 from src.models.commons import run_medical_XAI_one_image, get_presence_explainer, \
                                load_tfrecord_dataset, split_labels
@@ -232,10 +233,11 @@ def preprocess_files(section, uploaded_files):
     return preproc_img
     
 
-def reactivate_form():
-    st.write("REACTIVATE")
+def reactivate_form(rerun=True):
     st.session_state.submitted = False
     st.session_state['is_processing'] = False
+    if rerun:
+        st.rerun()
 
 
 def set_uploaded_data(section):
@@ -307,7 +309,7 @@ def set_uploaded_data(section):
     # Clear form
     if clear:
         st.session_state.uploader_key += 1
-        reactivate_form()
+        reactivate_form(rerun=False)
 
         if 'clean_files' in st.session_state:
             session_clear()
@@ -324,7 +326,6 @@ def rebuild_model(config_str):
     config = json.loads(config_str)
     
     tf.keras.backend.clear_session()
-    st.write("REBUILDING MODEL")
     
     img_size = config['data_preprocessing']['img_size']
     model_dir = config['path']['models_dir']
@@ -389,7 +390,6 @@ def display_output_images(section):
         except Exception as e:
             section.warning(f"Error loading {img_path.name}: {e}")
             
-    st.write("END LOOP IMG")
             
             
 def get_datasets_preprocs():
@@ -410,7 +410,7 @@ def get_datasets_preprocs():
 def set_model_visualisation(section):
     init_session_state_var()
     
-    if 'file_names' in st.session_state and st.session_state['file_names']:
+    if 'file_names' in st.session_state and st.session_state['file_names'] and st.session_state.submitted:
         model = rebuild_model(json.dumps(st.session_state['config'], sort_keys=True))
         background_images = load_background()
         
@@ -426,19 +426,26 @@ def set_model_visualisation(section):
         for x_batch, _ in dataset:
             for img in x_batch:
                 explainer_presence = get_presence_explainer(model, background_images.copy()) # in loop to avoid bug and help shap
+                img_id=st.session_state['file_names'][count].split('.')[0]
                 
-                st.session_state['type_explainers_cache'] = run_medical_XAI_one_image(\
-                                          img.numpy(), \
-                                          st.session_state['config']['data_preprocessing']['img_size'], \
-                                          model, \
-                                          background_images, \
-                                          explainer_presence, \
-                                          st.session_state['temp_dir_output'], \
-                                          classes, \
-                                          presence_cat=presence_cat,\
-                                          type_explainers_cache=type_explainers_cache,
-                                          low_memory=True,
-                                          img_id=st.session_state['file_names'][count].split('.')[0])
+                with warnings.catch_warnings(record=True) as w:
+                    warnings.simplefilter("always")
+                    st.session_state['type_explainers_cache'] = run_medical_XAI_one_image(\
+                                              img.numpy(), \
+                                              st.session_state['config']['data_preprocessing']['img_size'], \
+                                              model, \
+                                              background_images, \
+                                              explainer_presence, \
+                                              st.session_state['temp_dir_output'], \
+                                              classes, \
+                                              presence_cat=presence_cat,\
+                                              type_explainers_cache=type_explainers_cache,
+                                              low_memory=True,
+                                              img_id=img_id)
+                    
+                    for warning in w:
+                        msg = f"SHAP failed for {img_id}. {w} This can occur if 'low_memory' is selected or if 'nsamples' is low."
+                        section.warning(msg, icon="🚨")
                 
                 # update progress
                 count += 1
@@ -451,7 +458,6 @@ def set_model_visualisation(section):
         
         display_output_images(section)
         
-        st.write("END PROCESS")
         reactivate_form() # re activate file uploader
 
 

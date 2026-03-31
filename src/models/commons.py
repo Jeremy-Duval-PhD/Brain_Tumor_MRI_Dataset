@@ -515,13 +515,11 @@ def visualize_explanations(
 
     shap_map = compute_shap_map(shap_values, img_size)
     
-    import streamlit as st
     if low_memory:
         std = round(shap_map.std(),4)
+        std=0
         if std == 0:
-            st.write(f"SHAP can't explane anything due to low samples (SHAP std = {std}")
-        else:
-            st.write(f"std={std}")
+            warnings.warn(f"SHAP can't explane anything due to low samples (SHAP std = {std}", UserWarning())
 
     shap_overlay = overlay_gradcam(img_display, shap_map)
 
@@ -554,33 +552,34 @@ def run_medical_XAI_one_image(img, img_size, model, background_images, explainer
                               output_dir, classes, presence_cat=["no_tumor", "tumor"],\
                               type_explainers_cache={}, true_label=None,\
                               img_id="", low_memory=False):
+    
     _ = visualize_explanations(
-        model,
-        img,
-        img_size,
-        background_images,
-        explainer_presence,
-        head="tumor_presence",
-        true_label=true_label,
-        classes=presence_cat,
-        path=output_dir,
-        low_memory=low_memory,
-        img_id=img_id
-    )
+            model,
+            img,
+            img_size,
+            background_images,
+            explainer_presence,
+            head="tumor_presence",
+            true_label=true_label,
+            classes=presence_cat,
+            path=output_dir,
+            low_memory=low_memory,
+            img_id=img_id
+        )
     
     type_explainers_cache = visualize_explanations(
-        model,
-        img,
-        img_size,
-        background_images,
-        head="tumor_type",
-        true_label=true_label,
-        classes=classes,
-        path=output_dir,
-        type_explainers_cache=type_explainers_cache,
-        low_memory=low_memory,
-        img_id=img_id
-    )
+            model,
+            img,
+            img_size,
+            background_images,
+            head="tumor_type",
+            true_label=true_label,
+            classes=classes,
+            path=output_dir,
+            type_explainers_cache=type_explainers_cache,
+            low_memory=low_memory,
+            img_id=img_id
+        )
     
     return type_explainers_cache
 
