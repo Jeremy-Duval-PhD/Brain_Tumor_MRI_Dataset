@@ -274,7 +274,6 @@ def set_uploaded_data(section):
             #type="primary",
             disabled=(
                 st.session_state.is_processing
-                or ((not uploaded_files))
             ),
             use_container_width=True
         )
@@ -389,6 +388,8 @@ def display_output_images(section):
 
         except Exception as e:
             section.warning(f"Error loading {img_path.name}: {e}")
+            
+    st.write("END LOOP IMG")
             
             
 def get_datasets_preprocs():
