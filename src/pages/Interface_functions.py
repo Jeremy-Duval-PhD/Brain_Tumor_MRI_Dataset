@@ -233,42 +233,74 @@ def preprocess_files(section, uploaded_files):
     
 
 def set_uploaded_data(section):
+    # Init session state
     if "uploader_key" not in st.session_state:
         st.session_state.uploader_key = 0
-    
+
+    if "submitted" not in st.session_state:
+        st.session_state.submitted = False
+
     cntr = section.container(border=True)
-    
-    help_msg = '''
-                 You can upload MRI files at jpg format. 
-              '''
-    uploaded_files = cntr.file_uploader("Upload your MRI", 
-                                       type=['png', 'jpg'],
-                                       help=help_msg, 
-                                       accept_multiple_files=True,
-                                       key=f"uploader_{st.session_state.uploader_key}")
-    
-    if uploaded_files is not None and uploaded_files:
+
+    help_msg = """
+    You can upload MRI files at jpg or png format.
+    """
+
+    # uploader form
+    with cntr.form(key="upload_form"):
+
+        uploaded_files = st.file_uploader(
+            "Upload your MRI",
+            type=['png', 'jpg'],
+            help=help_msg,
+            accept_multiple_files=True,
+            key=f"uploader_{st.session_state.uploader_key}",
+            disabled=st.session_state.submitted,
+            key="mri_uploader"
+        )
+
+        submit = st.form_submit_button(
+            "Submit",
+            disabled=st.session_state.submitted
+        )
+
+    # Process files after submit
+    if submit and uploaded_files:
+        st.session_state.submitted = True
+
         file_names = get_files_names(uploaded_files)
-        
+
         if 'clean_files' not in st.session_state \
-        or file_names != st.session_state['file_names']:
-            init_session_state_var() 
+        or file_names != st.session_state.get('file_names', []):
+
+            init_session_state_var()
+
             clean_files = preprocess_files(section, uploaded_files)
+
             st.session_state['clean_files'] = clean_files
             st.session_state['file_names'] = file_names
-        
-        
-    if cntr.button("Clear", type="primary", disabled=\
-    (not uploaded_files) and ('clean_files' not in st.session_state or not st.session_state['clean_files'])):
+
+    # Clear (not in form)
+    if cntr.button(
+        "Clear",
+        type="primary",
+        disabled=(
+            (not uploaded_files) and
+            ('clean_files' not in st.session_state or not st.session_state['clean_files'])
+        )
+    ):
         st.session_state.uploader_key += 1
+        st.session_state.submitted = False  # 🔥 reset du form
+
         if 'clean_files' in st.session_state:
             session_clear()
+
         st.rerun()
         
         
-        
-        
-        
+
+
+
 
 @st.cache_resource
 def rebuild_model(config_str):
@@ -399,6 +431,8 @@ def set_model_visualisation(section):
         progress_bar.progress(1.0, text="MRI processing done ✅")
         
         display_output_images(section)
+        
+        st.session_state.submitted = False # re activate file uploader
 
 
 
