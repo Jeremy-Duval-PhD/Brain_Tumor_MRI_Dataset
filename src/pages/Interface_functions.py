@@ -233,6 +233,7 @@ def preprocess_files(section, uploaded_files):
     
 
 def reactivate_form():
+    st.write("REACTIVATE")
     st.session_state.submitted = False
     st.session_state['is_processing'] = False
 
@@ -273,8 +274,7 @@ def set_uploaded_data(section):
             #type="primary",
             disabled=(
                 st.session_state.is_processing
-                or ((not uploaded_files) and
-                ('clean_files' not in st.session_state or not st.session_state['clean_files']))
+                or ((not uploaded_files))
             ),
             use_container_width=True
         )
@@ -450,6 +450,7 @@ def set_model_visualisation(section):
         
         display_output_images(section)
         
+        st.write("END PROCESS")
         reactivate_form() # re activate file uploader
 
 
