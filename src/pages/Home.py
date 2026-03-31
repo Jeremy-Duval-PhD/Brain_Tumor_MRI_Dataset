@@ -9,9 +9,11 @@ def dialog_important_info():
                 ''')
                 
     if st.button("Read and approved"):
+        st.session_state['diclaimer_read'] = True
         st.rerun()
 
-dialog_important_info()
+if 'diclaimer_read' not in st.session_state or not st.session_state['diclaimer_read']:
+    dialog_important_info()
 
 st.title("Brain Tumor Detector")
 
