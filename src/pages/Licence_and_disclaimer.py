@@ -1,4 +1,16 @@
+import streamlit as st
 
+@st.dialog('⚠️ Medical Disclaimer & Licences', dismissible=False)
+def dialog_important_info():
+    st.markdown(get_medical_disclaimer_markdown())
+    st.divider()
+    st.markdown(get_commercial_licence_markdown())
+    st.divider()
+    st.markdown(get_polyform_licence_markdown())
+                
+    if st.button("Read and approved"):
+        st.session_state['diclaimer_read'] = True
+        st.rerun()
 
 
 def get_medical_disclaimer_markdown():

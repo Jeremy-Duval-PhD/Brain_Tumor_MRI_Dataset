@@ -1,20 +1,8 @@
 import streamlit as st
 import src.pages.Licence_and_disclaimer as legal
 
-@st.dialog('⚠️ Medical Disclaimer & Licences', dismissible=False)
-def dialog_important_info():
-    st.markdown(legal.get_medical_disclaimer_markdown())
-    st.divider()
-    st.markdown(legal.get_commercial_licence_markdown())
-    st.divider()
-    st.markdown(legal.get_polyform_licence_markdown())
-                
-    if st.button("Read and approved"):
-        st.session_state['diclaimer_read'] = True
-        st.rerun()
-
 if 'diclaimer_read' not in st.session_state or not st.session_state['diclaimer_read']:
-    dialog_important_info()
+    legal.dialog_important_info()
 
 st.title("Brain Tumor Detector")
 

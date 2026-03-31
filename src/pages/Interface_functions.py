@@ -232,6 +232,11 @@ def preprocess_files(section, uploaded_files):
     return preproc_img
     
 
+def reactivate_form():
+    st.session_state.submitted = False
+    st.session_state['is_processing'] = False
+
+
 def set_uploaded_data(section):
     # Init session state
     if "uploader_key" not in st.session_state:
@@ -239,13 +244,16 @@ def set_uploaded_data(section):
 
     if "submitted" not in st.session_state:
         st.session_state.submitted = False
+        
+    if 'is_processing' not in st.session_state:
+       st.session_state['is_processing'] = False
 
     cntr = section.container(border=True)
 
     help_msg = """
     You can upload MRI files at jpg or png format.
     """
-
+    
     # uploader form
     with cntr.form(key="upload_form"):
 
@@ -255,13 +263,12 @@ def set_uploaded_data(section):
             help=help_msg,
             accept_multiple_files=True,
             key=f"uploader_{st.session_state.uploader_key}",
-            disabled=st.session_state.submitted,
-            key="mri_uploader"
+            disabled=st.session_state.is_processing,
         )
 
         submit = st.form_submit_button(
             "Submit",
-            disabled=st.session_state.submitted
+            disabled=st.session_state.is_processing,
         )
 
     # Process files after submit
@@ -285,12 +292,13 @@ def set_uploaded_data(section):
         "Clear",
         type="primary",
         disabled=(
-            (not uploaded_files) and
-            ('clean_files' not in st.session_state or not st.session_state['clean_files'])
+            st.session_state.is_processing
+            or ((not uploaded_files) and
+            ('clean_files' not in st.session_state or not st.session_state['clean_files']))
         )
     ):
         st.session_state.uploader_key += 1
-        st.session_state.submitted = False  # 🔥 reset du form
+        reactivate_form()
 
         if 'clean_files' in st.session_state:
             session_clear()
@@ -432,7 +440,7 @@ def set_model_visualisation(section):
         
         display_output_images(section)
         
-        st.session_state.submitted = False # re activate file uploader
+        reactivate_form() # re activate file uploader
 
 
 

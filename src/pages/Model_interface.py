@@ -1,6 +1,10 @@
 import streamlit as st
 import pandas as pd
 from src.pages.Interface_functions import set_uploaded_data, set_model_visualisation
+import src.pages.Licence_and_disclaimer as legal
+
+if 'diclaimer_read' not in st.session_state or not st.session_state['diclaimer_read']:
+    legal.dialog_important_info()
 
 st.title("Analyse your MRI")
 
