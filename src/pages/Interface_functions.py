@@ -270,7 +270,7 @@ def set_uploaded_data(section):
 
         clear = col1.form_submit_button(
             "Clear",
-            type="primary",
+            #type="primary",
             disabled=(
                 st.session_state.is_processing
                 or ((not uploaded_files) and
@@ -287,10 +287,12 @@ def set_uploaded_data(section):
         )
 
     # Process files after submit
-    if submit and uploaded_files:
-        st.session_state.submitted = True
-        st.session_state.is_processing = True
-
+    if (submit or st.session_state.submitted)  and uploaded_files:
+        if not st.session_state.is_processing:
+            st.session_state.submitted = True
+            st.session_state.is_processing = True
+            st.rerun()
+            
         file_names = get_files_names(uploaded_files)
 
         if 'clean_files' not in st.session_state \
