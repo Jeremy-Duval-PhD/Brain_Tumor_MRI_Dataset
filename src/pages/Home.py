@@ -1,4 +1,15 @@
 import streamlit as st
+import src.pages.Licence_and_disclaimer as legal
+
+@st.dialog('⚠️ Medical disclaimer', dismissible=False)
+def dialog_important_info():
+    st.markdown(legal.get_medical_disclaimer_markdown())
+    st.markdown('''
+                **For licences, please see "Documentation".**
+                ''')
+                
+    if st.button("Read and approved"):
+        st.rerun()
 
 
 st.title("Brain Tumor Detector")

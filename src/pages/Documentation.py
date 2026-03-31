@@ -1,9 +1,16 @@
 import streamlit as st
+import src.pages.Licence_and_disclaimer as legal
 
 
 st.title("Documentations")
 
-tab_eda, tab_prep, tab_model = st.tabs(["Exploratory Data Analysis", "Preprocessing", "Modelling"])  
+tab_discl, tab_licence, tab_eda, tab_prep, tab_model = st.tabs(["Medical Disclaimer", "Licences", "Exploratory Data Analysis", "Preprocessing", "Modelling"])  
+
+tab_discl.markdown(legal.get_medical_disclaimer_markdown())
+
+tab_licence.markdown(legal.get_commercial_licence_markdown())
+tab_licence.divider()
+tab_licence.markdown(legal.get_polyform_licence_markdown())
 
 tab_eda.markdown('''
             # EDA (Notebook)

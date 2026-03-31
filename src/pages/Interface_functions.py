@@ -152,7 +152,7 @@ def get_clean_tfrecords(ds):
 def save_images(section, images, nb_files, filename_prefix="img"):
     count = 0
 
-    progress_text = "Saving images. Please wait."
+    progress_text = "Upload images. Please wait."
     progress_bar = section.progress(0.0, text=progress_text)
 
     for idx, img in enumerate(images):
@@ -176,7 +176,7 @@ def save_images(section, images, nb_files, filename_prefix="img"):
         progress = count / nb_files
         progress_bar.progress(progress, text=f"{progress_text} ({count}/{nb_files})")
 
-    progress_bar.progress(1.0, text="Saving images. Done ✅")
+    progress_bar.progress(1.0, text="Upload images. Done ✅")
 
 
 def save_tf_records(section, ds, nb_files, batch_size, filename_prefix="data"):
