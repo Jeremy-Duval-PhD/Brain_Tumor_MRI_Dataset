@@ -11,6 +11,7 @@ def dialog_important_info():
     if st.button("Read and approved"):
         st.rerun()
 
+dialog_important_info()
 
 st.title("Brain Tumor Detector")
 

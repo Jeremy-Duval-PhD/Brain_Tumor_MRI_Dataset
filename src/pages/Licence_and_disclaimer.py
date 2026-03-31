@@ -1,8 +1,7 @@
-
-
+import textwrap
 
 def get_medical_disclaimer_markdown():
-    return '''# Medical Disclaimer
+    return textwrap.dedent('''# Medical Disclaimer
 
             This software and associated machine learning models are provided for research and educational purposes only.
             
@@ -17,11 +16,11 @@ def get_medical_disclaimer_markdown():
             - patient harm
             - regulatory compliance
             
-            Users are solely responsible for ensuring compliance with all applicable medical regulations.'''
+            Users are solely responsible for ensuring compliance with all applicable medical regulations.''')
             
 
 def get_commercial_licence_markdown():
-    return '''# Commercial Licensing
+    return textwrap.dedent('''# Commercial Licensing
 
             This software and associated model weights are released under the PolyForm Noncommercial License 1.0.0.
             
@@ -43,11 +42,11 @@ def get_commercial_licence_markdown():
             - redistribution within commercial offerings
             
             To obtain a commercial license, contact:
-            [jeremy-duval-phd](https://www.linkedin.com/in/jeremy-duval-phd/)'''
+            [jeremy-duval-phd](https://www.linkedin.com/in/jeremy-duval-phd/)''')
             
 
 def get_polyform_licence_markdown():
-    return '''# PolyForm Noncommercial License 1.0.0
+    return textwrap.dedent('''# PolyForm Noncommercial License 1.0.0
 
             <https://polyformproject.org/licenses/noncommercial/1.0.0>
             
@@ -177,4 +176,4 @@ def get_polyform_licence_markdown():
             software under these terms.
             
             **Use** means anything you do with the software requiring one
-            of your licenses.'''
+            of your licenses.''')
