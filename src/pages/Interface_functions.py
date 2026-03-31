@@ -265,15 +265,31 @@ def set_uploaded_data(section):
             key=f"uploader_{st.session_state.uploader_key}",
             disabled=st.session_state.is_processing,
         )
+        
+        col1, col2 = st.columns([1, 2])
 
-        submit = st.form_submit_button(
+        clear = col1.form_submit_button(
+            "Clear",
+            type="primary",
+            disabled=(
+                st.session_state.is_processing
+                or ((not uploaded_files) and
+                ('clean_files' not in st.session_state or not st.session_state['clean_files']))
+            ),
+            use_container_width=True
+        )
+
+        submit = col2.form_submit_button(
             "Submit",
+            type="primary",
             disabled=st.session_state.is_processing,
+            use_container_width=True
         )
 
     # Process files after submit
     if submit and uploaded_files:
         st.session_state.submitted = True
+        st.session_state.is_processing = True
 
         file_names = get_files_names(uploaded_files)
 
@@ -287,16 +303,8 @@ def set_uploaded_data(section):
             st.session_state['clean_files'] = clean_files
             st.session_state['file_names'] = file_names
 
-    # Clear (not in form)
-    if cntr.button(
-        "Clear",
-        type="primary",
-        disabled=(
-            st.session_state.is_processing
-            or ((not uploaded_files) and
-            ('clean_files' not in st.session_state or not st.session_state['clean_files']))
-        )
-    ):
+    # Clear form
+    if clear:
         st.session_state.uploader_key += 1
         reactivate_form()
 
