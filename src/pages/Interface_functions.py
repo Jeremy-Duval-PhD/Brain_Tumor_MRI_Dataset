@@ -439,7 +439,7 @@ def display_output_images(section):
             section.image(
                 img,
                 caption=img_path.name,
-                width="stretch"
+                width=None
             )
         except Exception as e:
             section.warning(f"Error loading {img_path.name}: {e}")
