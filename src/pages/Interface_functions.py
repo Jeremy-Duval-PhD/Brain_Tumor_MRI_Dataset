@@ -377,8 +377,7 @@ def create_zip_from_images(image_paths):
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zf:
         for img_path in image_paths:
-            with open(img_path, "rb") as f:
-                zf.writestr(img_path.name, f.read())
+            zf.write(img_path, arcname=img_path.name)
     zip_buffer.seek(0)
     return zip_buffer
 
@@ -433,8 +432,7 @@ def display_output_images(section):
     with section.container():
         for img_path in image_paths:
             try:
-                with open(img_path, "rb") as f:
-                    img = f.read()
+                img = Image.open(img_path)
                 section.image(
                     img,
                     caption=img_path.name,
@@ -477,8 +475,6 @@ def set_model_visualisation(section):
         progress_bar = progress_bar.progress(0.0, text=progress_text)
         
         cntr_downl = section.container(border=True)
-        col_btn_reset, col_empty, col_btn_download = cntr_downl.columns([1, 1, 1])
-        img_ctnr = section.container()
         
         count = 0
         nb_files = len(st.session_state['file_names'])
@@ -520,8 +516,10 @@ def set_model_visualisation(section):
         progress_bar.progress(1.0, text="MRI processing done ✅")
         
         image_paths = get_img_paths(section) 
+        cntr_downl = section.container(border=True)
         download_images_zip(cntr_downl, image_paths)
         
+        img_ctnr = section.container()
         display_output_images(img_ctnr)
         
 
