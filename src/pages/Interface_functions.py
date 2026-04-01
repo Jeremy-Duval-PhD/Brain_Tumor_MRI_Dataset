@@ -44,9 +44,6 @@ def session_clear():
     
     
 def init_session_state_var():
-    if 'reset_triggered' not in st.session_state:
-        st.session_state["reset_triggered"] = False
-    
     if 'clean_files' not in st.session_state:
         st.session_state['clean_files'] = []
         
@@ -247,7 +244,6 @@ def reactivate_form(rerun=True):
     if 'clean_files' in st.session_state:
         session_clear()
 
-    st.session_state["reset_triggered"] = False
     if rerun:
         st.rerun()
     
@@ -394,6 +390,8 @@ def download_images_zip(section, image_paths, session_key="zip_output_images", z
 
     reset_btn = col1.button("Reset", 
                             #help="Clear images and interface"
+                            on_click=reactivate_form,
+                            kwargs={"rerun": False}
                             )
 
     col3.download_button(
@@ -403,9 +401,6 @@ def download_images_zip(section, image_paths, session_key="zip_output_images", z
         #help= f'The images will be downloaded as {zip_name}',
         mime="application/zip"
     )
-    
-    if reset_btn:
-        st.session_state["reset_triggered"] = True # re activate file uploader
     
     
 def get_img_paths(section, valid_ext = [".jpg", ".jpeg", ".png"]):
