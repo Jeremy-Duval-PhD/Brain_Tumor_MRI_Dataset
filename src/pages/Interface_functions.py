@@ -512,7 +512,7 @@ def set_model_visualisation(section):
                                     kwargs={"rerun": False}
                                     )
 
-            st.download_button(
+            col_btn_download.download_button(
                 label="Download images",
                 data=st.session_state[session_key],
                 file_name=zip_name,
@@ -521,7 +521,7 @@ def set_model_visualisation(section):
             )
         
         with img_placeholder.container():
-            display_output_images(st)
+            display_output_images(img_placeholder)
         
 
 
