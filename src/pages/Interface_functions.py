@@ -389,7 +389,7 @@ def download_images_zip(section, image_paths, session_key="zip_output_images", z
     col1, col2, col3 = st.columns([1, 1, 1])
 
     reset_btn = col1.button("Reset", 
-                            #help="Clear images and interface"
+                            help="Clear images and interface",
                             on_click=reactivate_form,
                             kwargs={"rerun": False}
                             )
@@ -398,8 +398,9 @@ def download_images_zip(section, image_paths, session_key="zip_output_images", z
         label="Download images",
         data=st.session_state[session_key],
         file_name=zip_name,
-        #help= f'The images will be downloaded as {zip_name}',
-        mime="application/zip"
+        help= f'The images will be downloaded as {zip_name}',
+        mime="application/zip",
+        icon=":material/download:"
     )
     
     
@@ -486,9 +487,9 @@ def display_output_images(section):
                         section.warning(f"Error loading {img_path.name}: {e}")
                     
                 if is_pres:
+                    pred="no_tumor"
                     if pred == "tumor":
-                        #tumor_detected.append(root)
-                        pass
+                        tumor_detected.append(root)
                     else:
                         msg = f"{root}: no tumor detected, with {pred_conf}% confidence."
                         section.badge(msg, icon=":material/check:", color="green")
