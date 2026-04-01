@@ -386,13 +386,10 @@ def create_zip_from_images(image_paths):
 def download_images_zip(section, image_paths, session_key="zip_output_images", zip_name="output_images.zip"):
     if session_key not in st.session_state:
         st.session_state[session_key] = create_zip_from_images(image_paths)
-        
-    ctnr = section.container(border=True)
 
-    col1, col2, col3 = ctnr.columns([1, 1, 1])
+    col1, col2, col3 = section.columns([1, 1, 1])
 
     reset_btn = col1.button("Reset", 
-                            #type="primary", 
                             #help="Clear images and interface"
                             )
 
@@ -520,9 +517,11 @@ def set_model_visualisation(section):
         progress_bar.progress(1.0, text="MRI processing done ✅")
         
         image_paths = get_img_paths(section) 
-        download_images_zip(section, image_paths)
+        btn_ctnr = section.container(border=True)
+        download_images_zip(btn_ctnr, image_paths)
         
-        display_output_images(section)
+        img_ctnr = section.container()
+        display_output_images(img_ctnr)
         
 
 
