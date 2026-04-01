@@ -427,10 +427,7 @@ def get_img_paths(section, valid_ext = [".jpg", ".jpeg", ".png"]):
     
 
 def is_in_file_names(file):
-    st.write(f'T{file}')
     for name in st.session_state.file_names:
-        st.write("-T{name.split('.')[0]}")
-        st.write("-T{file in name.split('.')[0]}")
         if file in name.split('.')[0] :
             return True
     return False
@@ -471,38 +468,34 @@ def display_output_images(section):
             file_name = get_file_name(img_path)
             root = get_file_root(file_name)
             in_file_n = is_in_file_names(root)
-            is_pres = is_presence_head(file_name)
-            pred_conf = get_pred_confidence(file_name)
-            pred = get_pred_label(file_name)
             
-            st.write(file_name)
-            st.write(root)
-            st.write(in_file_n)
-            st.write(is_pres)
-            st.write(pred_conf)
-            st.write(pred)
-            
-            try:
-                img = Image.open(img_path)
-                section.image(
-                    img,
-                    caption=img_path.name,
-                    use_column_width=True
-                )
-            except Exception as e:
-                section.warning(f"Error loading {img_path.name}: {e}")
+            if in_file_n:
+                is_pres = is_presence_head(file_name)
+                pred_conf = get_pred_confidence(file_name)
+                pred = get_pred_label(file_name)
                 
-            if is_pres:
-                if pred == "tumor":
-                    tumor_detected.append(root)
-                else:
-                    msg = f"{root}: no tumor detected, with {pred_conf}% confidence."
-                    section.badge(msg, icon=":material/check:", color="green")
-            else:
-                if root in tumor_detected:
-                    msg= f"{root}: {pred} detected, with {pred_conf}% confidence."
-                    section.badge(msg, icon="🚨", color="red")
+                if is_pres or root in tumor_detected:
+                    try:
+                        img = Image.open(img_path)
+                        section.image(
+                            img,
+                            caption=img_path.name,
+                            use_column_width=True
+                        )
+                    except Exception as e:
+                        section.warning(f"Error loading {img_path.name}: {e}")
                     
+                if is_pres:
+                    if pred == "tumor":
+                        #tumor_detected.append(root)
+                        pass
+                    else:
+                        msg = f"{root}: no tumor detected, with {pred_conf}% confidence."
+                        section.badge(msg, icon=":material/check:", color="green")
+                else:
+                    if root in tumor_detected:
+                        msg= f"{root}: {pred} detected, with {pred_conf}% confidence."
+                        section.badge(msg, icon="🚨", color="red")    
 
             
             
