@@ -456,7 +456,7 @@ def set_model_visualisation(section):
         progress_bar = progress_bar.progress(0.0, text=progress_text)
         
         cntr_downl = section.container(border=True)
-        col_btn_reset, col_empty, col_btn_download = cntr_downl.columns([1, 1, 1])
+        btn_placeholder = cntr_downl.empty()
         img_ctnr = section.container()
         
         count = 0
@@ -505,18 +505,20 @@ def set_model_visualisation(section):
         if session_key not in st.session_state:
             st.session_state[session_key] = create_zip_from_images(image_paths)
 
-        reset_btn = col_btn_reset.button("Reset", 
-                                #help="Clear images and interface"
-                                on_click=reactivate_form,
-                                kwargs={"rerun": False}
-                                )
-
-        col_btn_download.download_button(
-            label="Download images",
-            data=st.session_state[session_key],
-            file_name=zip_name,
-            #help= f'The images will be downloaded as {zip_name}',
-            mime="application/zip"
+        with btn_placeholder.container():
+            col_btn_reset, col_empty, col_btn_download = cntr_downl.columns([1, 1, 1])
+            reset_btn = col_btn_reset.button("Reset", 
+                                    #help="Clear images and interface"
+                                    on_click=reactivate_form,
+                                    kwargs={"rerun": False}
+                                    )
+    
+            col_btn_download.download_button(
+                label="Download images",
+                data=st.session_state[session_key],
+                file_name=zip_name,
+                #help= f'The images will be downloaded as {zip_name}',
+                mime="application/zip"
         )
         
         display_output_images(img_ctnr)
