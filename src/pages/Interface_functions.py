@@ -23,7 +23,7 @@ def load_config(config_path: Path) -> dict:
     return config
     
 
-@st.cache_resource
+@st.cache_resource(show_spinner=False)
 def get_preproc_model():
     init_session_state_var()
     return tf.saved_model.load(str(st.session_state['artefact_dir']))
@@ -340,7 +340,7 @@ def set_uploaded_data(section):
 
 
 
-@st.cache_resource
+@st.cache_resource(show_spinner=False)
 def rebuild_model(config_str):
     config = json.loads(config_str)
     
@@ -362,7 +362,7 @@ def rebuild_model(config_str):
     return model
 
 
-@st.cache_resource
+@st.cache_resource(show_spinner=False)
 def load_background():
     path = Path(st.session_state['config']['path']['models_dir'])
     return np.load(path / "background.npy")
@@ -429,7 +429,7 @@ def get_img_paths(section, valid_ext = [".jpg", ".jpeg", ".png"]):
     
 
 def display_output_images(section):
-    expender = section.expender("Results", expended=True)
+    expander = section.expander("Results", expanded=True)
     
     image_paths = get_img_paths()
 
@@ -437,13 +437,13 @@ def display_output_images(section):
     for img_path in image_paths:
         try:
             img = Image.open(img_path)
-            expender.image(
+            expander.image(
                 img,
                 caption=img_path.name,
                 use_column_width=True
             )
         except Exception as e:
-            expender.warning(f"Error loading {img_path.name}: {e}")
+            expander.warning(f"Error loading {img_path.name}: {e}")
 
             
             
@@ -486,8 +486,8 @@ def set_model_visualisation(section):
                 
                 with warnings.catch_warnings(record=True) as w:
                     warnings.simplefilter("always")
-                    st.write(st.session_state.low_memory)
-                    st.write(st.session_state.nsamples)
+                    #st.write(st.session_state.low_memory)
+                    #st.write(st.session_state.nsamples)
                     st.session_state['type_explainers_cache'] = run_medical_XAI_one_image(\
                                               img.numpy(), \
                                               st.session_state['config']['data_preprocessing']['img_size'], \
