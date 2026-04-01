@@ -44,6 +44,9 @@ def session_clear():
     
     
 def init_session_state_var():
+    if 'reset_triggered' not in st.session_state:
+        st.session_state["reset_triggered"] = False
+    
     if 'clean_files' not in st.session_state:
         st.session_state['clean_files'] = []
         
