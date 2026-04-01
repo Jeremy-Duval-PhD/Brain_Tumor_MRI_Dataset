@@ -240,7 +240,7 @@ def reactivate_form(rerun=True):
     st.session_state['is_processing'] = False
     if rerun:
         st.rerun()
-
+        
 
 def set_uploaded_data(section):
     # Init session state
@@ -271,14 +271,6 @@ def set_uploaded_data(section):
             disabled=st.session_state.is_processing,
         )
         
-        popover = st.popover("SHAP settings", disabled=st.session_state.is_processing)
-        help_msg = """Activate if you are on cloud. It will fix SHAP samples to 5."""
-        low_memory = popover.toggle("Low memory", True, help=help_msg, \
-                                      disabled=st.session_state.is_processing)
-        help_msg = """Use it for local applications. A high number of samples is more effective for explaining the model with SHAP, but it can use a lot of memory."""
-        nsamples = popover.slider("Number of semples for SHAP", 1, 200, 100, 1, help=help_msg, \
-                                      disabled=(st.session_state.is_processing or low_memory))
-        
         col1, col2 = st.columns([1, 2])
 
         clear = col1.form_submit_button(
@@ -296,14 +288,24 @@ def set_uploaded_data(section):
             disabled=st.session_state.is_processing,
             use_container_width=True
         )
+        
+    
+        
+    popover = cntr.popover("SHAP settings", disabled=st.session_state.is_processing)
+    help_msg = """Activate if you are on cloud. It will fix SHAP samples to 5."""
+    low_memory = popover.toggle("Low memory", True, help=help_msg, \
+                                    key="low_memory",\
+                                    disabled=st.session_state.is_processing)
+    help_msg = """Use it for local applications. A high number of samples is more effective for explaining the model with SHAP, but it can use a lot of memory."""
+    nsamples = popover.slider("Number of semples for SHAP", 1, 200, 100, 1, help=help_msg, \
+                                  key="nsamples",\
+                                  disabled=(st.session_state.is_processing or low_memory))
 
     # Process files after submit
     if (submit or st.session_state.submitted)  and uploaded_files:
         if not st.session_state.is_processing:
             st.session_state.submitted = True
             st.session_state.is_processing = True
-            st.session_state.low_memory = low_memory
-            st.session_state.nsamples = nsamples
             st.rerun()
             
         file_names = get_files_names(uploaded_files)
