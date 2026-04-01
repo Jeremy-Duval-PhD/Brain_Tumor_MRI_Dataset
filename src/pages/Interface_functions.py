@@ -455,7 +455,8 @@ def set_model_visualisation(section):
         progress_bar = st.session_state.progress_bar
         progress_bar = progress_bar.progress(0.0, text=progress_text)
         
-        btn_placeholder = section.empty()
+        btn_placeholder = section.container(border=True)
+        col_reset, _, col_download = btn_placeholder.columns([1, 1, 1])
         img_placeholder = section.container()
         
         count = 0
@@ -504,21 +505,20 @@ def set_model_visualisation(section):
         if session_key not in st.session_state:
             st.session_state[session_key] = create_zip_from_images(image_paths)
             
-        with btn_placeholder.container(border=True):
-            col_btn_reset, col_empty, col_btn_download = st.columns([1, 1, 1])
-            reset_btn = col_btn_reset.button("Reset", 
-                                    #help="Clear images and interface"
-                                    on_click=reactivate_form,
-                                    kwargs={"rerun": False}
-                                    )
+        col_btn_reset, col_empty, col_btn_download = st.columns([1, 1, 1])
+        reset_btn = col_btn_reset.button("Reset", 
+                                #help="Clear images and interface"
+                                on_click=reactivate_form,
+                                kwargs={"rerun": False}
+                                )
 
-            col_btn_download.download_button(
-                label="Download images",
-                data=st.session_state[session_key],
-                file_name=zip_name,
-                #help= f'The images will be downloaded as {zip_name}',
-                mime="application/zip"
-            )
+        col_btn_download.download_button(
+            label="Download images",
+            data=st.session_state[session_key],
+            file_name=zip_name,
+            #help= f'The images will be downloaded as {zip_name}',
+            mime="application/zip"
+        )
         
         display_output_images(img_placeholder)
         
