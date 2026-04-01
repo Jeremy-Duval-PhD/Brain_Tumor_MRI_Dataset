@@ -108,7 +108,7 @@ progress_bar = process_section.progress(0.0, text="")
 st.session_state["progress_bar"] = progress_bar # to use only one progress bar along the process
 
 # """ functions """ 
-if st.session_state["reset_triggered"]:
+if 'reset_triggered' in st.session_state and st.session_state["reset_triggered"]:
     reactivate_form(rerun=True)
 
 set_uploaded_data(uploader_section)
