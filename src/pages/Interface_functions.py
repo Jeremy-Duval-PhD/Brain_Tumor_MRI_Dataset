@@ -401,7 +401,8 @@ def download_images_zip(section, image_paths, session_key="zip_output_images", z
         help= f'The images will be downloaded as {zip_name}',
         mime="application/zip",
         icon=":material/download:",
-        on_click=reactivate_form
+        on_click=reactivate_form,
+        kwargs={"rerun": False}
     )
     
     
