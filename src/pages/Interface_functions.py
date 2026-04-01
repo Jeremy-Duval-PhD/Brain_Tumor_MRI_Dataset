@@ -240,6 +240,10 @@ def preprocess_files(section, uploaded_files):
 def reactivate_form(rerun=True):
     st.session_state.submitted = False
     st.session_state['is_processing'] = False
+
+    if 'clean_files' in st.session_state:
+        session_clear()
+
     if rerun:
         st.rerun()
     
@@ -307,7 +311,7 @@ def set_uploaded_data(section):
         settings_shap()
 
     # Process files after submit
-    if (submit or st.session_state.submitted)  and uploaded_files:
+    if (submit or st.session_state.submitted) and uploaded_files:
         if not st.session_state.is_processing:
             st.session_state.submitted = True
             st.session_state.is_processing = True
@@ -328,12 +332,7 @@ def set_uploaded_data(section):
     # Clear form
     if clear:
         st.session_state.uploader_key += 1
-        reactivate_form(rerun=False)
-
-        if 'clean_files' in st.session_state:
-            session_clear()
-
-        st.rerun()
+        reactivate_form(rerun=True)
         
         
 
@@ -433,17 +432,16 @@ def display_output_images(section):
     if not image_paths:
         return
 
-    with section.container():
-        for img_path in image_paths:
-            try:
-                img = Image.open(img_path)
-                section.image(
-                    img,
-                    caption=img_path.name,
-                    use_column_width=True
-                )
-            except Exception as e:
-                section.warning(f"Error loading {img_path.name}: {e}")
+    for img_path in image_paths:
+        try:
+            img = Image.open(img_path)
+            section.image(
+                img,
+                caption=img_path.name,
+                use_column_width=True
+            )
+        except Exception as e:
+            section.warning(f"Error loading {img_path.name}: {e}")
 
             
             
