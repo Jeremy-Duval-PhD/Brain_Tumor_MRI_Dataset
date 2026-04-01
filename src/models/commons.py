@@ -518,9 +518,8 @@ def visualize_explanations(
     
     if low_memory:
         std = round(shap_map.std(),4)
-        std=0
         if std == 0:
-            warnings.warn(f"SHAP can't explane anything due to low samples (SHAP std = {std}", StdSHAPWarning)
+            warnings.warn(f"SHAP can't explane anything due to low samples (SHAP std = {std})", StdSHAPWarning)
 
     shap_overlay = overlay_gradcam(img_display, shap_map)
 
