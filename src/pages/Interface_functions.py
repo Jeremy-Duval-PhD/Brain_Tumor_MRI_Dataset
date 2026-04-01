@@ -311,7 +311,7 @@ def set_uploaded_data(section):
         if not st.session_state.is_processing:
             st.session_state.submitted = True
             st.session_state.is_processing = True
-            st.rerun()
+            st.rerun(rerun=False)
             
         file_names = get_files_names(uploaded_files)
 
