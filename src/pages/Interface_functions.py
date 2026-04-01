@@ -443,8 +443,8 @@ def set_model_visualisation(section):
                 
                 with warnings.catch_warnings(record=True) as w:
                     warnings.simplefilter("always")
-                    st.wrtie(st.session_state.low_memory)
-                    st.wrtie(st.session_state.nsamples)
+                    st.write(st.session_state.low_memory)
+                    st.write(st.session_state.nsamples)
                     st.session_state['type_explainers_cache'] = run_medical_XAI_one_image(\
                                               img.numpy(), \
                                               st.session_state['config']['data_preprocessing']['img_size'], \
