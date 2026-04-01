@@ -394,9 +394,10 @@ def download_images_zip(section, image_paths, session_key="zip_output_images", z
     reset_btn = col1.button("Reset", type="primary", disabled=not(st.session_state.is_processing))
 
     col3.download_button(
-        label=f"Download all images as {zip_name}",
+        label="Download images",
         data=st.session_state[session_key],
         file_name=zip_name,
+        help= f'The images will be downloaded as {zip_name}',
         mime="application/zip",
         disabled=not(st.session_state.is_processing)
     )
@@ -432,10 +433,11 @@ def display_output_images(section):
     expander = section.expander("Results", expanded=True)
     
     image_paths = get_img_paths(expander)
-
+    st.write(image_paths)
     # Affichage des images
     for img_path in image_paths:
         try:
+            st.write(img_path)
             img = Image.open(img_path)
             expander.image(
                 img,
