@@ -450,6 +450,7 @@ def get_pred_confidence(file, is_pres):
             nb = (nb - 50) * 2
         else:
             nb = (50 - nb) * 2
+        return nb
     else:
         return nb
 
