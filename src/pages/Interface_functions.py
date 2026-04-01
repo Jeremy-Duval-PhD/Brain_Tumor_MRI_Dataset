@@ -4,6 +4,8 @@ from pathlib import Path
 import yaml
 import json
 import gc
+import io
+import zipfile
 import tensorflow as tf
 from PIL import Image
 import tempfile
@@ -372,41 +374,77 @@ def get_type_explainer_cache():
     return st.session_state['type_explainers_cache']
 
 
-def display_output_images(section):
+def create_zip_from_images(image_paths):
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zf:
+        for img_path in image_paths:
+            zf.write(img_path, arcname=img_path.name)
+    zip_buffer.seek(0)
+    return zip_buffer
+
+
+def download_images_zip(section, image_paths, session_key="zip_output_images", zip_name="output_images.zip"):
+    if session_key not in st.session_state:
+        st.session_state[session_key] = create_zip_from_images(image_paths)
+        
+    ctnr = section.container(border=True)
+
+    col1, col2, col3 = ctnr.columns([1, 1, 1])
+
+    reset_btn = col1.button("Reset", type="primary", disabled=not(st.session_state.is_processing))
+
+    col3.download_button(
+        label=f"Download all images as {zip_name}",
+        data=st.session_state[session_key],
+        file_name=zip_name,
+        mime="application/zip",
+        disabled=not(st.session_state.is_processing)
+    )
+    
+    if reset_btn:
+        reactivate_form() # re activate file uploader
+    
+    
+def get_img_paths(section, valid_ext = [".jpg", ".jpeg", ".png"]):
     if "temp_dir_output" not in st.session_state:
         section.warning("No output directory found in session.")
         return
-
+    
     img_dir = Path(st.session_state["temp_dir_output"])
 
     if not img_dir.exists():
         section.error(f"Directory does not exist: {img_dir}")
         return
-
-    valid_ext = [".jpg", ".jpeg", ".png"]
-
+    
     image_paths = sorted([
         p for p in img_dir.iterdir()
         if p.suffix.lower() in valid_ext
     ])
-
+    
     if not image_paths:
         section.info("No images found in output directory.")
         return
+    
+    return image_paths
+    
 
+def display_output_images(section):
+    expender = section.expender("Results", expended=True)
+    
+    image_paths = get_img_paths()
+
+    # Affichage des images
     for img_path in image_paths:
         try:
             img = Image.open(img_path)
-
-            section.image(
+            expender.image(
                 img,
                 caption=img_path.name,
-                use_column_width=True  # prend toute la largeur
+                use_column_width=True
             )
-
         except Exception as e:
-            section.warning(f"Error loading {img_path.name}: {e}")
-            
+            expender.warning(f"Error loading {img_path.name}: {e}")
+
             
             
 def get_datasets_preprocs():
@@ -480,8 +518,9 @@ def set_model_visualisation(section):
         
         display_output_images(section)
         
-        # ADD FORM TO DOWLOAD HERE OR TO CLEAR ; THEN ACTIVATE THIS
-        reactivate_form() # re activate file uploader
+        image_paths = get_img_paths() 
+        download_images_zip(section, image_paths)
+        
 
 
 

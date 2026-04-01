@@ -542,7 +542,7 @@ def visualize_explanations(
     
     name = str(img_id).replace("\n", "_").replace(" ", "_")
     safe_name = title_text.replace("\n", "_").replace(" ", "_")
-    name = name + safe_name + ".png"
+    name = name + "_" + head + "_" + safe_name + ".png"
     plt.savefig(path / name)
     
     return type_explainers_cache
