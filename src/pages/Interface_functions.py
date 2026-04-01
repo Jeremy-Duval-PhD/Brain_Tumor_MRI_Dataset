@@ -386,13 +386,15 @@ def download_images_zip(section, image_paths, session_key="zip_output_images", z
     if session_key not in st.session_state:
         st.session_state[session_key] = create_zip_from_images(image_paths)
 
-    reset_btn = section.button("Reset", 
+    col1, col2, col3 = st.columns([1, 1, 1])
+
+    reset_btn = col1.button("Reset", 
                             #help="Clear images and interface"
                             on_click=reactivate_form,
                             kwargs={"rerun": False}
                             )
 
-    section.download_button(
+    col3.download_button(
         label="Download images",
         data=st.session_state[session_key],
         file_name=zip_name,
@@ -473,9 +475,6 @@ def set_model_visualisation(section):
         progress_text = "MRI processing in progress. Please wait."
         progress_bar = st.session_state.progress_bar
         progress_bar = progress_bar.progress(0.0, text=progress_text)
-        
-        cntr_downl = section.container(border=True)
-        
         count = 0
         nb_files = len(st.session_state['file_names'])
         for x_batch, _ in dataset:
@@ -516,8 +515,8 @@ def set_model_visualisation(section):
         progress_bar.progress(1.0, text="MRI processing done ✅")
         
         image_paths = get_img_paths(section) 
-        cntr_downl = section.container(border=True)
-        download_images_zip(cntr_downl, image_paths)
+        with section.container(border=True):
+            download_images_zip(section, image_paths)
         
         img_ctnr = section.container()
         display_output_images(img_ctnr)
