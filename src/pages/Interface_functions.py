@@ -392,14 +392,15 @@ def download_images_zip(section, image_paths, session_key="zip_output_images", z
     col1, col2, col3 = ctnr.columns([1, 1, 1])
 
     reset_btn = col1.button("Reset", 
-                            type="primary", 
-                            help="Clear images and interface")
+                            #type="primary", 
+                            #help="Clear images and interface"
+                            )
 
     col3.download_button(
         label="Download images",
         data=st.session_state[session_key],
         file_name=zip_name,
-        help= f'The images will be downloaded as {zip_name}',
+        #help= f'The images will be downloaded as {zip_name}',
         mime="application/zip"
     )
     
@@ -432,17 +433,20 @@ def get_img_paths(section, valid_ext = [".jpg", ".jpeg", ".png"]):
 
 def display_output_images(section):
     image_paths = get_img_paths(section)
-    
-    for img_path in image_paths:
-        try:
-            img = Image.open(img_path)
-            section.image(
-                img,
-                caption=img_path.name,
-                use_column_width=True
-            )
-        except Exception as e:
-            section.warning(f"Error loading {img_path.name}: {e}")
+    if not image_paths:
+        return
+
+    with section.container():
+        for img_path in image_paths:
+            try:
+                img = Image.open(img_path)
+                section.image(
+                    img,
+                    caption=img_path.name,
+                    use_column_width=True
+                )
+            except Exception as e:
+                section.warning(f"Error loading {img_path.name}: {e}")
 
             
             
