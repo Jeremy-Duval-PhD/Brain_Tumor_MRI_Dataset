@@ -428,8 +428,10 @@ def get_img_paths(section, valid_ext = [".jpg", ".jpeg", ".png"]):
 
 def is_in_file_names(file):
     st.write(st.session_state.file_names)
-    for name in st.session_state.file_names:
-        if file in name.split('.')[0] :
+    for i in range(0,st.session_state.file_names):
+        name = st.session_state['file_names'][i].split('.')[0]
+        st.write(name)
+        if file in name :
             return True
     return False
 
@@ -497,7 +499,7 @@ def display_output_images(section):
                     section.badge(msg, icon=":material/check:", color="green")
             else:
                 if root in tumor_detected:
-                    f"{root}: {pred} detected, with {pred_conf}% confidence."
+                    msg= f"{root}: {pred} detected, with {pred_conf}% confidence."
                     section.badge(msg, icon="🚨", color="red")
                     
 
