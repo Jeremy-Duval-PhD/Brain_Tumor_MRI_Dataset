@@ -433,25 +433,16 @@ def get_img_paths(section, valid_ext = [".jpg", ".jpeg", ".png"]):
 def display_output_images(section):
     image_paths = get_img_paths(section)
     
-    try:
-        img = Image.open(image_paths[0])
-        _, height = img.size
-        height = 4 * height
-    except:
-        height = "content"
-    
-    cntr = section.container(height=height)
-    
     for img_path in image_paths:
         try:
             img = Image.open(img_path)
-            cntr.image(
+            section.image(
                 img,
                 caption=img_path.name,
                 width="stretch"
             )
         except Exception as e:
-            cntr.warning(f"Error loading {img_path.name}: {e}")
+            section.warning(f"Error loading {img_path.name}: {e}")
 
             
             
