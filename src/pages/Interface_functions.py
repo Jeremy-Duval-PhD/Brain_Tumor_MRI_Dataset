@@ -266,41 +266,41 @@ def set_uploaded_data(section):
     if 'is_processing' not in st.session_state:
        st.session_state['is_processing'] = False
 
-    cntr = section.container(border=True)
+    with section.container(border=True):
 
-    help_msg = """
-    You can upload MRI files at jpg or png format. You can download the testing files for this app [here](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset?resource=download).
-    """
-    
-    # uploader form
-    with cntr.form(key="upload_form"):
-
-        uploaded_files = st.file_uploader(
-            "Upload your MRI",
-            type=['png', 'jpg'],
-            help=help_msg,
-            accept_multiple_files=True,
-            key=f"uploader_{st.session_state.uploader_key}",
-            disabled=st.session_state.is_processing,
-        )
+        help_msg = """
+        You can upload MRI files at jpg or png format. You can download the testing files for this app [here](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset?resource=download).
+        """
         
-        col1, col2 = st.columns([1, 2])
-
-        clear = col1.form_submit_button(
-            "Clear",
-            #type="primary",
-            disabled=(
-                st.session_state.is_processing
-            ),
-            use_container_width=True
-        )
-
-        submit = col2.form_submit_button(
-            "Submit",
-            type="primary",
-            disabled=st.session_state.is_processing,
-            use_container_width=True
-        )
+        # uploader form
+        with section.form(key="upload_form"):
+    
+            uploaded_files = st.file_uploader(
+                "Upload your MRI",
+                type=['png', 'jpg'],
+                help=help_msg,
+                accept_multiple_files=True,
+                key=f"uploader_{st.session_state.uploader_key}",
+                disabled=st.session_state.is_processing,
+            )
+            
+            col1, col2 = st.columns([1, 2])
+    
+            clear = col1.form_submit_button(
+                "Clear",
+                #type="primary",
+                disabled=(
+                    st.session_state.is_processing
+                ),
+                use_container_width=True
+            )
+    
+            submit = col2.form_submit_button(
+                "Submit",
+                type="primary",
+                disabled=st.session_state.is_processing,
+                use_container_width=True
+            )
        
         settings_shap()
 
