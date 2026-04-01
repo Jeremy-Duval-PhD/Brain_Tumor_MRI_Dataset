@@ -8,7 +8,7 @@ def dialog_important_info():
     st.divider()
     st.markdown(get_polyform_licence_markdown())
                 
-    if st.button("Read and approved"):
+    if st.button("Read and approved", type="primary"):
         st.session_state['diclaimer_read'] = True
         st.rerun()
 
