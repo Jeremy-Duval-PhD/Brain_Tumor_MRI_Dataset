@@ -432,7 +432,7 @@ def display_output_images(section):
     if not image_paths:
         return
 
-    with section.container:
+    with section.container():
         for img_path in image_paths:
             try:
                 img = Image.open(img_path)
