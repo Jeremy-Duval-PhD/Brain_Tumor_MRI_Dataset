@@ -426,6 +426,32 @@ def get_img_paths(section, valid_ext = [".jpg", ".jpeg", ".png"]):
     return image_paths
     
 
+def is_in_file_names(file):
+    for name in st.session_state.file_names:
+        if file in name.split('.')[0] :
+            return True
+    return False
+
+
+def is_presence_head(file):
+    if "presence" in file:
+        return True
+    else:
+        return False
+    
+    
+def get_pred_confidence(file):
+    return float(file.split('(')[-1].split(')')[0])
+
+
+def get_pred_label(file):
+    return file.split('PRED:_')[-1].split('_')[0]
+
+
+def get_file_name(path):
+    return path.split("/")[-1]
+
+
 def display_output_images(section):
     image_paths = get_img_paths(section)
     if not image_paths:
@@ -433,6 +459,18 @@ def display_output_images(section):
 
     with section.container():
         for img_path in image_paths:
+            file_name = get_file_name(img_path)
+            in_file_n = is_in_file_names(file_name)
+            is_pres = is_presence_head(file_name)
+            pred_conf = get_pred_confidence(file_name)
+            pred = get_pred_label(file_name)
+            
+            st.write(file_name)
+            st.write(in_file_n)
+            st.write(is_pres)
+            st.write(pred_conf)
+            st.write(pred)
+            
             try:
                 img = Image.open(img_path)
                 section.image(
@@ -518,7 +556,7 @@ def set_model_visualisation(section):
         with section.container(border=True):
             download_images_zip(section, image_paths)
             
-        section.devide()
+        section.divider()
         
         img_ctnr = section.container()
         display_output_images(img_ctnr)
