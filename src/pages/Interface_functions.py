@@ -449,7 +449,7 @@ def get_pred_label(file):
 
 
 def get_file_name(path):
-    return path.split("/")[-1]
+    return path.name.split("/")[-1]
 
 
 def display_output_images(section):
