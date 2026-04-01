@@ -381,25 +381,6 @@ def create_zip_from_images(image_paths):
     zip_buffer.seek(0)
     return zip_buffer
 
-
-def download_images_zip(col_btn_reset, col_btn_download, image_paths, session_key="zip_output_images", zip_name="output_images.zip"):
-    if session_key not in st.session_state:
-        st.session_state[session_key] = create_zip_from_images(image_paths)
-
-    reset_btn = col_btn_reset.button("Reset", 
-                            #help="Clear images and interface"
-                            on_click=reactivate_form,
-                            kwargs={"rerun": False}
-                            )
-
-    col_btn_download.download_button(
-        label="Download images",
-        data=st.session_state[session_key],
-        file_name=zip_name,
-        #help= f'The images will be downloaded as {zip_name}',
-        mime="application/zip"
-    )
-    
     
 def get_img_paths(section, valid_ext = [".jpg", ".jpeg", ".png"]):
     if "temp_dir_output" not in st.session_state:
@@ -518,7 +499,25 @@ def set_model_visualisation(section):
         progress_bar.progress(1.0, text="MRI processing done ✅")
         
         image_paths = get_img_paths(section) 
-        download_images_zip(col_btn_reset, col_btn_download, image_paths)
+        session_key="zip_output_images"
+        zip_name="output_images.zip"
+        
+        if session_key not in st.session_state:
+            st.session_state[session_key] = create_zip_from_images(image_paths)
+
+        reset_btn = col_btn_reset.button("Reset", 
+                                #help="Clear images and interface"
+                                on_click=reactivate_form,
+                                kwargs={"rerun": False}
+                                )
+
+        col_btn_download.download_button(
+            label="Download images",
+            data=st.session_state[session_key],
+            file_name=zip_name,
+            #help= f'The images will be downloaded as {zip_name}',
+            mime="application/zip"
+        )
         
         display_output_images(img_ctnr)
         
