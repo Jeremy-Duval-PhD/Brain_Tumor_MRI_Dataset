@@ -377,7 +377,8 @@ def create_zip_from_images(image_paths):
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zf:
         for img_path in image_paths:
-            zf.write(img_path, arcname=img_path.name)
+            with open(img_path, "rb") as f:
+                zf.writestr(img_path.name, f.read())
     zip_buffer.seek(0)
     return zip_buffer
 
@@ -432,7 +433,8 @@ def display_output_images(section):
     with section.container():
         for img_path in image_paths:
             try:
-                img = Image.open(img_path)
+                with open(img_path, "rb") as f:
+                    img = f.read()
                 section.image(
                     img,
                     caption=img_path.name,
