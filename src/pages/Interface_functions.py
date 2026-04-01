@@ -254,7 +254,7 @@ def set_uploaded_data(section):
     cntr = section.container(border=True)
 
     help_msg = """
-    You can upload MRI files at jpg or png format.
+    You can upload MRI files at jpg or png format. You can download the testing files for this app [here](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset?resource=download).
     """
     
     # uploader form
