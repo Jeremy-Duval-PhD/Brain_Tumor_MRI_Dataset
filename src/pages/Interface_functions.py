@@ -272,7 +272,7 @@ def set_uploaded_data(section):
         )
         
         popover = st.popover("SHAP settings", disabled=st.session_state.is_processing)
-        help_msg = """Check this if you are on cloud. It will fix SHAP samples to 5."""
+        help_msg = """Activate if you are on cloud. It will fix SHAP samples to 5."""
         low_memory = popover.toggle("Low memory", True, help=help_msg, \
                                       disabled=st.session_state.is_processing)
         help_msg = """Use it for local applications. A high number of samples is more effective for explaining the model with SHAP, but it can use a lot of memory."""
@@ -443,6 +443,8 @@ def set_model_visualisation(section):
                 
                 with warnings.catch_warnings(record=True) as w:
                     warnings.simplefilter("always")
+                    st.wrtie(st.session_state.low_memory)
+                    st.wrtie(st.session_state.nsamples)
                     st.session_state['type_explainers_cache'] = run_medical_XAI_one_image(\
                                               img.numpy(), \
                                               st.session_state['config']['data_preprocessing']['img_size'], \
@@ -453,7 +455,7 @@ def set_model_visualisation(section):
                                               classes, \
                                               presence_cat=presence_cat,\
                                               type_explainers_cache=type_explainers_cache,
-                                              low_memory=st.session_state.low_memor,
+                                              low_memory=st.session_state.low_memory,
                                               nsamples=st.session_state.nsamples,
                                               img_id=img_id)
                     
