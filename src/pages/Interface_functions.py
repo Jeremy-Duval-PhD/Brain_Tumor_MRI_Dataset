@@ -442,11 +442,15 @@ def is_presence_head(file):
     
     
 def get_pred_confidence(file):
-    return float(file.split('(')[-1].split(')')[0])
+    return float(file.split('(')[-1].split(')')[0])*100
 
 
 def get_pred_label(file):
     return file.split('__')[-1].split('_')[0]
+
+
+def get_file_root(file):
+    return file.split('_')[0]
 
 
 def get_file_name(path):
@@ -457,16 +461,19 @@ def display_output_images(section):
     image_paths = get_img_paths(section)
     if not image_paths:
         return
-
+    
+    tumor_detected = []
     with section.container():
         for img_path in image_paths:
             file_name = get_file_name(img_path)
+            root = get_file_root(file_name)
             in_file_n = is_in_file_names(file_name)
             is_pres = is_presence_head(file_name)
             pred_conf = get_pred_confidence(file_name)
             pred = get_pred_label(file_name)
             
             st.write(file_name)
+            st.write(root)
             st.write(in_file_n)
             st.write(is_pres)
             st.write(pred_conf)
@@ -481,6 +488,18 @@ def display_output_images(section):
                 )
             except Exception as e:
                 section.warning(f"Error loading {img_path.name}: {e}")
+                
+            if is_pres:
+                if pred == "tumor":
+                    tumor_detected.append(root)
+                else:
+                    msg = f"{root}: no tumor detected, with {pred_conf}% confidence."
+                    section.badge(msg, icon=":material/check:", color="green")
+            else:
+                if root in tumor_detected:
+                    f"{root}: {pred} detected, with {pred_conf}% confidence."
+                    section.badge(msg, icon="🚨", color="red")
+                    
 
             
             
