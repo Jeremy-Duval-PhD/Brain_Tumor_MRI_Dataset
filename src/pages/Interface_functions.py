@@ -391,15 +391,16 @@ def download_images_zip(section, image_paths, session_key="zip_output_images", z
 
     col1, col2, col3 = ctnr.columns([1, 1, 1])
 
-    reset_btn = col1.button("Reset", type="primary", disabled=not(st.session_state.is_processing))
+    reset_btn = col1.button("Reset", 
+                            type="primary", 
+                            help="Clear images and interface")
 
     col3.download_button(
         label="Download images",
         data=st.session_state[session_key],
         file_name=zip_name,
         help= f'The images will be downloaded as {zip_name}',
-        mime="application/zip",
-        disabled=not(st.session_state.is_processing)
+        mime="application/zip"
     )
     
     if reset_btn:
@@ -430,22 +431,27 @@ def get_img_paths(section, valid_ext = [".jpg", ".jpeg", ".png"]):
     
 
 def display_output_images(section):
-    expander = section.expander("Results", expanded=True)
+    image_paths = get_img_paths(section)
     
-    image_paths = get_img_paths(expander)
-    st.write(image_paths)
-    # Affichage des images
+    try:
+        img = Image.open(image_paths[0])
+        _, height = img.size
+        height = 4 * height
+    except:
+        height = "content"
+    
+    cntr = section.container(height=height)
+    
     for img_path in image_paths:
         try:
-            st.write(img_path)
             img = Image.open(img_path)
-            expander.image(
+            cntr.image(
                 img,
                 caption=img_path.name,
-                use_column_width=True
+                width="stretch"
             )
         except Exception as e:
-            expander.warning(f"Error loading {img_path.name}: {e}")
+            cntr.warning(f"Error loading {img_path.name}: {e}")
 
             
             
@@ -518,10 +524,10 @@ def set_model_visualisation(section):
     
         progress_bar.progress(1.0, text="MRI processing done ✅")
         
-        display_output_images(section)
-        
         image_paths = get_img_paths(section) 
         download_images_zip(section, image_paths)
+        
+        display_output_images(section)
         
 
 

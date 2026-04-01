@@ -541,7 +541,7 @@ def visualize_explanations(
     plt.tight_layout()
     
     name = str(img_id).replace("\n", "_").replace(" ", "_")
-    safe_name = title_text.replace("\n", "_").replace(" ", "_")
+    safe_name = title_text.replace("\n", "_").replace(" ", "_").replace(':', '_')
     name = name + "_" + head + "_" + safe_name + ".png"
     plt.savefig(path / name)
     
