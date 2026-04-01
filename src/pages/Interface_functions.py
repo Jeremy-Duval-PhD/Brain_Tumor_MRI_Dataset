@@ -496,6 +496,8 @@ def set_model_visualisation(section):
     
         progress_bar.progress(1.0, text="MRI processing done ✅")
         
+        display_output_images(img_placeholder)
+        
         image_paths = get_img_paths(section) 
         session_key="zip_output_images"
         zip_name="output_images.zip"
@@ -521,7 +523,6 @@ def set_model_visualisation(section):
             mime="application/zip"
         )
         
-        display_output_images(img_placeholder)
         
 
 
