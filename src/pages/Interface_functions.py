@@ -427,10 +427,8 @@ def get_img_paths(section, valid_ext = [".jpg", ".jpeg", ".png"]):
     
 
 def is_in_file_names(file):
-    st.write(st.session_state.file_names)
     for i in range(0,len(st.session_state.file_names)):
         name = st.session_state['file_names'][i].split('.')[0]
-        st.write(name)
         if file in name :
             return True
     return False
@@ -456,6 +454,7 @@ def get_file_root(file):
 
 
 def get_file_name(path):
+    st.write(path)
     return path.name.split("/")[-1]
 
 
