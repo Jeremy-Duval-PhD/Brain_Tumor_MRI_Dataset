@@ -240,7 +240,20 @@ def reactivate_form(rerun=True):
     st.session_state['is_processing'] = False
     if rerun:
         st.rerun()
+    
         
+@st.fragment
+def settings_shap(section):
+    popover = section.popover("SHAP settings", disabled=st.session_state.is_processing)
+    help_msg = """Activate if you are on cloud. It will fix SHAP samples to 5."""
+    low_memory = popover.toggle("Low memory", True, help=help_msg, \
+                                    key="low_memory",\
+                                    disabled=st.session_state.is_processing)
+    help_msg = """Use it for local applications. A high number of samples is more effective for explaining the model with SHAP, but it can use a lot of memory."""
+    popover.slider("Number of semples for SHAP", 1, 200, 100, 1, help=help_msg, \
+                                  key="nsamples",\
+                                  disabled=(st.session_state.is_processing or low_memory))
+
 
 def set_uploaded_data(section):
     # Init session state
@@ -289,17 +302,7 @@ def set_uploaded_data(section):
             use_container_width=True
         )
         
-    
-        
-    popover = cntr.popover("SHAP settings", disabled=st.session_state.is_processing)
-    help_msg = """Activate if you are on cloud. It will fix SHAP samples to 5."""
-    low_memory = popover.toggle("Low memory", True, help=help_msg, \
-                                    key="low_memory",\
-                                    disabled=st.session_state.is_processing)
-    help_msg = """Use it for local applications. A high number of samples is more effective for explaining the model with SHAP, but it can use a lot of memory."""
-    nsamples = popover.slider("Number of semples for SHAP", 1, 200, 100, 1, help=help_msg, \
-                                  key="nsamples",\
-                                  disabled=(st.session_state.is_processing or low_memory))
+    settings_shap(cntr)
 
     # Process files after submit
     if (submit or st.session_state.submitted)  and uploaded_files:
