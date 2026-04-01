@@ -381,6 +381,25 @@ def create_zip_from_images(image_paths):
     zip_buffer.seek(0)
     return zip_buffer
 
+
+def download_images_zip(section, image_paths, session_key="zip_output_images", zip_name="output_images.zip"):
+    if session_key not in st.session_state:
+        st.session_state[session_key] = create_zip_from_images(image_paths)
+
+    reset_btn = section.button("Reset", 
+                            #help="Clear images and interface"
+                            on_click=reactivate_form,
+                            kwargs={"rerun": False}
+                            )
+
+    section.download_button(
+        label="Download images",
+        data=st.session_state[session_key],
+        file_name=zip_name,
+        #help= f'The images will be downloaded as {zip_name}',
+        mime="application/zip"
+    )
+    
     
 def get_img_paths(section, valid_ext = [".jpg", ".jpeg", ".png"]):
     if "temp_dir_output" not in st.session_state:
@@ -455,7 +474,9 @@ def set_model_visualisation(section):
         progress_bar = st.session_state.progress_bar
         progress_bar = progress_bar.progress(0.0, text=progress_text)
         
-        img_placeholder = section.container()
+        cntr_downl = section.container(border=True)
+        col_btn_reset, col_empty, col_btn_download = cntr_downl.columns([1, 1, 1])
+        img_ctnr = section.container()
         
         count = 0
         nb_files = len(st.session_state['file_names'])
@@ -496,33 +517,10 @@ def set_model_visualisation(section):
     
         progress_bar.progress(1.0, text="MRI processing done ✅")
         
-        display_output_images(img_placeholder)
-        
         image_paths = get_img_paths(section) 
-        session_key="zip_output_images"
-        zip_name="output_images.zip"
+        download_images_zip(cntr_downl, image_paths)
         
-        if session_key not in st.session_state:
-            st.session_state[session_key] = create_zip_from_images(image_paths)
-        
-        
-        btn_placeholder = section.container(border=True)
-        col_btn_reset, _, col_btn_download = btn_placeholder.columns([1, 1, 1])
-            
-        reset_btn = col_btn_reset.button("Reset", 
-                                #help="Clear images and interface"
-                                on_click=reactivate_form,
-                                kwargs={"rerun": False}
-                                )
-        
-        col_btn_download.download_button(
-            label="Download images",
-            data=st.session_state[session_key],
-            file_name=zip_name,
-            #help= f'The images will be downloaded as {zip_name}',
-            mime="application/zip"
-        )
-        
+        display_output_images(img_ctnr)
         
 
 
