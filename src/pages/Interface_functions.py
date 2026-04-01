@@ -302,7 +302,8 @@ def set_uploaded_data(section):
             use_container_width=True
         )
         
-    settings_shap(cntr)
+    settings_section = st.empty()
+    settings_shap(settings_section)
 
     # Process files after submit
     if (submit or st.session_state.submitted)  and uploaded_files:
