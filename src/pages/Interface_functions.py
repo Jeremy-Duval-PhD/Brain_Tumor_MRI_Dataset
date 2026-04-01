@@ -518,7 +518,7 @@ def set_model_visualisation(section):
         
         display_output_images(section)
         
-        image_paths = get_img_paths() 
+        image_paths = get_img_paths(section) 
         download_images_zip(section, image_paths)
         
 
