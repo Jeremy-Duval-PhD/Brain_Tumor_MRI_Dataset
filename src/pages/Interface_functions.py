@@ -432,16 +432,17 @@ def display_output_images(section):
     if not image_paths:
         return
 
-    for img_path in image_paths:
-        try:
-            img = Image.open(img_path)
-            section.image(
-                img,
-                caption=img_path.name,
-                use_column_width=True
-            )
-        except Exception as e:
-            section.warning(f"Error loading {img_path.name}: {e}")
+    with section.container:
+        for img_path in image_paths:
+            try:
+                img = Image.open(img_path)
+                section.image(
+                    img,
+                    caption=img_path.name,
+                    use_column_width=True
+                )
+            except Exception as e:
+                section.warning(f"Error loading {img_path.name}: {e}")
 
             
             
