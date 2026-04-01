@@ -431,7 +431,7 @@ def get_img_paths(section, valid_ext = [".jpg", ".jpeg", ".png"]):
 def display_output_images(section):
     expander = section.expander("Results", expanded=True)
     
-    image_paths = get_img_paths()
+    image_paths = get_img_paths(expander)
 
     # Affichage des images
     for img_path in image_paths:
