@@ -517,6 +517,8 @@ def set_model_visualisation(section):
         image_paths = get_img_paths(section) 
         with section.container(border=True):
             download_images_zip(section, image_paths)
+            
+        section.devide()
         
         img_ctnr = section.container()
         display_output_images(img_ctnr)
