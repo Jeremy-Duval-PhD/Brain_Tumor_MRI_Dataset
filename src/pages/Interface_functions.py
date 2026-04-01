@@ -273,7 +273,7 @@ def set_uploaded_data(section):
         """
         
         # uploader form
-        with section.form(key="upload_form"):
+        with st.form(key="upload_form"):
     
             uploaded_files = st.file_uploader(
                 "Upload your MRI",
