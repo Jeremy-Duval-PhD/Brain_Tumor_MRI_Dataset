@@ -456,7 +456,7 @@ def set_model_visualisation(section):
         progress_bar = progress_bar.progress(0.0, text=progress_text)
         
         btn_placeholder = section.empty()
-        img_placeholder = section.empty()
+        img_placeholder = section.container()
         
         count = 0
         nb_files = len(st.session_state['file_names'])
@@ -520,8 +520,7 @@ def set_model_visualisation(section):
                 mime="application/zip"
             )
         
-        with img_placeholder.container():
-            display_output_images(img_placeholder)
+        display_output_images(img_placeholder)
         
 
 
