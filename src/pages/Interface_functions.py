@@ -427,6 +427,7 @@ def get_img_paths(section, valid_ext = [".jpg", ".jpeg", ".png"]):
     
 
 def is_in_file_names(file):
+    st.write(st.session_state.file_names)
     for name in st.session_state.file_names:
         if file in name.split('.')[0] :
             return True
@@ -445,7 +446,7 @@ def get_pred_confidence(file):
 
 
 def get_pred_label(file):
-    return file.split('PRED:_')[-1].split('_')[0]
+    return file.split('__')[-1].split('_')[0]
 
 
 def get_file_name(path):
