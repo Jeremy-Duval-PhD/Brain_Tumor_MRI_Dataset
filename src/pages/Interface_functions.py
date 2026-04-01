@@ -452,7 +452,8 @@ def get_pred_label(file):
 
 
 def get_file_root(file):
-    return file.split('_')[0]
+    splited = file.split('_')
+    return splited[0] + '_' + splited[1]
 
 
 def get_file_name(path):
@@ -469,7 +470,7 @@ def display_output_images(section):
         for img_path in image_paths:
             file_name = get_file_name(img_path)
             root = get_file_root(file_name)
-            in_file_n = is_in_file_names(file_name)
+            in_file_n = is_in_file_names(root)
             is_pres = is_presence_head(file_name)
             pred_conf = get_pred_confidence(file_name)
             pred = get_pred_label(file_name)
