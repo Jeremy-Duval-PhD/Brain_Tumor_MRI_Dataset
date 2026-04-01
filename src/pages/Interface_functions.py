@@ -243,8 +243,8 @@ def reactivate_form(rerun=True):
     
         
 @st.fragment
-def settings_shap(section):
-    popover = section.popover("SHAP settings", disabled=st.session_state.is_processing)
+def settings_shap():
+    popover = st.popover("SHAP settings", disabled=st.session_state.is_processing)
     help_msg = """Activate if you are on cloud. It will fix SHAP samples to 5."""
     low_memory = popover.toggle("Low memory", True, help=help_msg, \
                                     key="low_memory",\
@@ -301,9 +301,8 @@ def set_uploaded_data(section):
             disabled=st.session_state.is_processing,
             use_container_width=True
         )
-        
-    settings_section = st.empty()
-    settings_shap(settings_section)
+       
+        settings_shap()
 
     # Process files after submit
     if (submit or st.session_state.submitted)  and uploaded_files:
