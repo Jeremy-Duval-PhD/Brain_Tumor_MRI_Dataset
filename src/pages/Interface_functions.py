@@ -443,8 +443,15 @@ def is_presence_head(file):
         return False
     
     
-def get_pred_confidence(file):
-    return float(file.split('(')[-1].split(')')[0])*100
+def get_pred_confidence(file, is_pres):
+    nb = float(file.split('(')[-1].split(')')[0])*100
+    if is_pres: # if pred <= 0.5 = no tumor and > 0.5 = tumor 
+        if nb > 50:
+            nb = (nb - 50) * 2
+        else:
+            nb = (50 - nb) * 2
+    else:
+        return nb
 
 
 def get_pred_label(file):
@@ -474,7 +481,7 @@ def display_output_images(section):
             
             if in_file_n:
                 is_pres = is_presence_head(file_name)
-                pred_conf = get_pred_confidence(file_name)
+                pred_conf = get_pred_confidence(file_name, is_pres)
                 pred = get_pred_label(file_name)
                 
                 if is_pres or root in tumor_detected:
