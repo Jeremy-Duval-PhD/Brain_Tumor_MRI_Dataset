@@ -515,8 +515,8 @@ def set_model_visualisation(section):
         progress_bar.progress(1.0, text="MRI processing done ✅")
         
         image_paths = get_img_paths(section) 
-        with section.container(border=True):
-            download_images_zip(section, image_paths)
+        cntr_downl = section.container(border=True)
+        download_images_zip(cntr_downl, image_paths)
         
         img_ctnr = section.container()
         display_output_images(img_ctnr)
