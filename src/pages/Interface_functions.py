@@ -311,7 +311,7 @@ def set_uploaded_data(section):
         if not st.session_state.is_processing:
             st.session_state.submitted = True
             st.session_state.is_processing = True
-            st.rerun(rerun=False)
+            st.rerun()
             
         file_names = get_files_names(uploaded_files)
 
@@ -405,7 +405,7 @@ def download_images_zip(section, image_paths, session_key="zip_output_images", z
     )
     
     if reset_btn:
-        reactivate_form() # re activate file uploader
+        reactivate_form(rerun=False) # re activate file uploader
     
     
 def get_img_paths(section, valid_ext = [".jpg", ".jpeg", ".png"]):
