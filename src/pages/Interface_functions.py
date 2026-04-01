@@ -386,7 +386,7 @@ def download_images_zip(section, image_paths, session_key="zip_output_images", z
     if session_key not in st.session_state:
         st.session_state[session_key] = create_zip_from_images(image_paths)
 
-    col1, col2, col3 = st.columns([1, 1, 1])
+    col1, col2, col3 = section.columns([1, 1, 1])
 
     reset_btn = col1.button("Reset", 
                             #help="Clear images and interface"
