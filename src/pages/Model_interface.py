@@ -8,11 +8,14 @@ if 'diclaimer_read' not in st.session_state or not st.session_state['diclaimer_r
 
 st.title("Analyse your MRI")
 
-set_uploaded_data(st)
+uploader_section = st.empty()
 
 st.divider()
 
-details_expander = st.expander('Global metrics for interpretability')
+process_section = st.empty()
+
+
+details_expander = process_section.expander('Global metrics for interpretability')
 details_expander.markdown('''
             # Confidence intervals
             ## Head *tumor presence*
@@ -99,8 +102,11 @@ conf_interval_class = pd.DataFrame(
 )
 details_expander.table(conf_interval_class) 
 
+progress_bar = process_section.progress(0.0, text="")
+st.session_stateion_state["progress_bar"] = progress_bar # to use only one progress bar along the process
 
+""" functions """ 
 
+set_uploaded_data(uploader_section)
 
-
-set_model_visualisation(st)
+set_model_visualisation(process_section)

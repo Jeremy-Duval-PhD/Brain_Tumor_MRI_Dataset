@@ -154,7 +154,8 @@ def save_images(section, images, nb_files, filename_prefix="img"):
     count = 0
 
     progress_text = "Upload images. Please wait."
-    progress_bar = section.progress(0.0, text=progress_text)
+    progress_bar = st.session_state.progress_bar
+    progress_bar = progress_bar.progress(0.0, text=progress_text)
 
     for idx, img in enumerate(images):
         # security for type
@@ -186,7 +187,8 @@ def save_tf_records(section, ds, nb_files, batch_size, filename_prefix="data"):
     file_idx = 0
     
     progress_text = "Saving images. Please wait."
-    progress_bar = section.progress(0, text=progress_text)
+    progress_bar = st.session_state.progress_bar
+    progress_bar = progress_bar.progress(0, text=progress_text)
 
     for img, lbl in ds:
         if count % batch_size == 0:
@@ -420,7 +422,8 @@ def set_model_visualisation(section):
         dataset = get_datasets_preprocs()
         
         progress_text = "MRI processing in progress. Please wait."
-        progress_bar = section.progress(0.0, text=progress_text)
+        progress_bar = st.session_state.progress_bar
+        progress_bar = progress_bar.progress(0.0, text=progress_text)
         count = 0
         nb_files = len(st.session_state['file_names'])
         for x_batch, _ in dataset:
