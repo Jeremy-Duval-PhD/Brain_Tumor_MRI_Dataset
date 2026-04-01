@@ -551,7 +551,7 @@ def visualize_explanations(
 def run_medical_XAI_one_image(img, img_size, model, background_images, explainer_presence, \
                               output_dir, classes, presence_cat=["no_tumor", "tumor"],\
                               type_explainers_cache={}, true_label=None,\
-                              img_id="", low_memory=False):
+                              img_id="", low_memory=False, nsamples=100):
     
     _ = visualize_explanations(
             model,
@@ -564,6 +564,7 @@ def run_medical_XAI_one_image(img, img_size, model, background_images, explainer
             classes=presence_cat,
             path=output_dir,
             low_memory=low_memory,
+            nsamples=nsamples,
             img_id=img_id
         )
     
@@ -578,6 +579,7 @@ def run_medical_XAI_one_image(img, img_size, model, background_images, explainer
             path=output_dir,
             type_explainers_cache=type_explainers_cache,
             low_memory=low_memory,
+            nsamples=nsamples,
             img_id=img_id
         )
     

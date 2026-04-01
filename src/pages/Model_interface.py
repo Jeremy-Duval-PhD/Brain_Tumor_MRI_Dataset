@@ -102,10 +102,12 @@ conf_interval_class = pd.DataFrame(
 )
 details_expander.table(conf_interval_class) 
 
+
+
 progress_bar = process_section.progress(0.0, text="")
 st.session_state["progress_bar"] = progress_bar # to use only one progress bar along the process
 
-""" functions """ 
+# """ functions """ 
 
 set_uploaded_data(uploader_section)
 
