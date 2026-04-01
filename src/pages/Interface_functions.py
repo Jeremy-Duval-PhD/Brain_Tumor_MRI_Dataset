@@ -243,11 +243,11 @@ def preprocess_files(section, uploaded_files):
 def reactivate_form(rerun=True):
     st.session_state.submitted = False
     st.session_state['is_processing'] = False
-    st.session_state["reset_triggered"] = False
 
     if 'clean_files' in st.session_state:
         session_clear()
 
+    st.session_state["reset_triggered"] = False
     if rerun:
         st.rerun()
     
@@ -520,8 +520,8 @@ def set_model_visualisation(section):
         progress_bar.progress(1.0, text="MRI processing done ✅")
         
         image_paths = get_img_paths(section) 
-        btn_ctnr = section.container(border=True)
-        download_images_zip(btn_ctnr, image_paths)
+        with section.container(border=True):
+            download_images_zip(section, image_paths)
         
         img_ctnr = section.container()
         display_output_images(img_ctnr)
