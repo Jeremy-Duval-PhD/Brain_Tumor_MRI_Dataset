@@ -487,7 +487,6 @@ def display_output_images(section):
                         section.warning(f"Error loading {img_path.name}: {e}")
                     
                 if is_pres:
-                    pred="no_tumor"
                     if pred == "tumor":
                         tumor_detected.append(root)
                     else:
