@@ -455,8 +455,7 @@ def set_model_visualisation(section):
         progress_bar = st.session_state.progress_bar
         progress_bar = progress_bar.progress(0.0, text=progress_text)
         
-        btn_placeholder = section.container(border=True)
-        col_reset, _, col_download = btn_placeholder.columns([1, 1, 1])
+        col_reset, _, col_download = section.columns([1, 1, 1])
         img_placeholder = section.container()
         
         count = 0
