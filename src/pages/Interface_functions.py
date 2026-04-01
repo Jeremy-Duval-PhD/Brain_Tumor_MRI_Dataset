@@ -455,8 +455,15 @@ def set_model_visualisation(section):
         progress_bar = st.session_state.progress_bar
         progress_bar = progress_bar.progress(0.0, text=progress_text)
         
-        col_reset, _, col_download = section.columns([1, 1, 1])
+        col_btn_reset, _, col_btn_download = section.columns([1, 1, 1])
+        zip_placeholder = col_btn_download.empty()
         img_placeholder = section.container()
+            
+        reset_btn = col_btn_reset.button("Reset", 
+                                #help="Clear images and interface"
+                                on_click=reactivate_form,
+                                kwargs={"rerun": False}
+                                )
         
         count = 0
         nb_files = len(st.session_state['file_names'])
@@ -503,15 +510,9 @@ def set_model_visualisation(section):
         
         if session_key not in st.session_state:
             st.session_state[session_key] = create_zip_from_images(image_paths)
-            
-        col_btn_reset, col_empty, col_btn_download = st.columns([1, 1, 1])
-        reset_btn = col_btn_reset.button("Reset", 
-                                #help="Clear images and interface"
-                                on_click=reactivate_form,
-                                kwargs={"rerun": False}
-                                )
+        
 
-        col_btn_download.download_button(
+        zip_placeholder.download_button(
             label="Download images",
             data=st.session_state[session_key],
             file_name=zip_name,
