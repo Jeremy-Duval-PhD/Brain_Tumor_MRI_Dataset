@@ -162,7 +162,8 @@ def save_images(section, images, nb_files):
 
     for idx, (img, file) in enumerate(images):
         st.write(file)
-        file_root = str(file).split['.'][0]
+        st.write(type(file))
+        file_root = (str(file).split['.'])[0]
         st.write(file_root)
         # security for type
         if hasattr(img, "numpy"):
