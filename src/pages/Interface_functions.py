@@ -83,6 +83,11 @@ def load_image(uploaded_file):
     return np.array(img)
 
 
+def df_file_in_file_name(name):
+    name = name.split['/'][-1]
+    return not(st.session_state.file_names) or (name in st.session_state.file_names)
+
+
 def build_df_from_uploaded(paths, labels=None):
     """
     paths : list[str] → peut contenir des dossiers OU fichiers
@@ -97,11 +102,11 @@ def build_df_from_uploaded(paths, labels=None):
             # browse folder
             for img_file in p.iterdir():
                 if img_file.is_file():
-                    filepaths.append(str(img_file.resolve()))
-                    st.write(f'img_file {img_file}')
+                    if df_file_in_file_name(img_file):
+                        filepaths.append(str(img_file.resolve()))
         elif p.is_file():
-            filepaths.append(str(p.resolve()))
-            st.write(f'p {p}')
+            if df_file_in_file_name(p):
+                filepaths.append(str(p.resolve()))
             
     # remove duplicates
     filepaths = list(set(filepaths))
