@@ -98,15 +98,11 @@ def build_df_from_uploaded(paths, labels=None):
             for img_file in p.iterdir():
                 if img_file.is_file():
                     filepaths.append(str(img_file.resolve()))
-                    
-                    st.write(p)
         elif p.is_file():
             filepaths.append(str(p.resolve()))
-    
-            st.write(p.resolve())
+            
     # remove duplicates
     filepaths = list(set(filepaths))
-    st.write(filepaths)
 
     if labels is None:
         # default value -> use only to compare prediction and reality during model creation
@@ -120,7 +116,6 @@ def build_df_from_uploaded(paths, labels=None):
     
 def get_tf_dataset(preproc_model, nb_files):
     df = build_df_from_uploaded([st.session_state['temp_dir_raw']])
-    st.write(df)
     paths = df["filepath"].astype(str).values
     labels = df["label"].astype(str).values
     ds = tf.data.Dataset.from_tensor_slices((paths, labels))
@@ -229,7 +224,7 @@ def preprocess_files(section, uploaded_files):
     images = [load_image(f) for f in new_files]
     nb_files = len(images)
     save_images(section, images, nb_files)
-    st.write(new_files)
+    st.write(images)
     model = get_preproc_model()
     ds = get_tf_dataset(model, nb_files)
     
