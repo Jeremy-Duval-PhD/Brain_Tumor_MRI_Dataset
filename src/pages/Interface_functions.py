@@ -161,9 +161,7 @@ def save_images(section, images, nb_files):
     progress_bar = progress_bar.progress(0.0, text=progress_text)
 
     for idx, (img, file) in enumerate(images):
-        st.write(file)
-        st.write(type(file))
-        file_root = (str(file).split['.'])[0]
+        file_root = str(file).split('.')[0]
         st.write(file_root)
         # security for type
         if hasattr(img, "numpy"):
