@@ -444,12 +444,12 @@ def is_presence_head(file):
     
     
 def get_pred_confidence(file, is_pres):
-    nb = float(file.split('(')[-1].split(')')[0])*100
+    nb = int(float(file.split('(')[-1].split(')')[0])*100)
     if is_pres: # if pred <= 0.5 = no tumor and > 0.5 = tumor 
         if nb > 50:
-            nb = (nb - 50) * 2
+            return nb
         else:
-            nb = (50 - nb) * 2
+            nb = 100 - nb
         return nb
     else:
         return nb
@@ -500,11 +500,11 @@ def display_output_images(section):
                     if pred == "tumor":
                         tumor_detected.append(root)
                     else:
-                        msg = f"{root}: no tumor detected, with {pred_conf}% confidence."
+                        msg = f"{root}: no tumor detected, with {pred_conf}% probability."
                         section.badge(msg, icon=":material/check:", color="green")
                 else:
                     if root in tumor_detected:
-                        msg= f"{root}: {pred} detected, with {pred_conf}% confidence."
+                        msg= f"{root}: {pred} detected, with {pred_conf}% probability."
                         section.badge(msg, icon="🚨", color="red")    
 
             
