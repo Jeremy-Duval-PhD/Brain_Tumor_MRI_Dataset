@@ -159,7 +159,7 @@ def save_images(section, images, nb_files, filename_prefix="img"):
     progress_bar = st.session_state.progress_bar
     progress_bar = progress_bar.progress(0.0, text=progress_text)
 
-    for idx, img, file in enumerate(images):
+    for idx, (img, file) in enumerate(images):
         st.write(f"{idx} - {img} - {file}")
         # security for type
         if hasattr(img, "numpy"):
