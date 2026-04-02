@@ -86,6 +86,7 @@ def load_image(uploaded_file):
 def df_file_in_file_name(name):
     name = name.name
     st.write(f'name : {name}')
+    print(f'name : {name}')
     return not(st.session_state.file_names) or (name in st.session_state.file_names)
 
 
@@ -95,7 +96,7 @@ def build_df_from_uploaded(paths, labels=None):
     """
 
     filepaths = []
-
+    st.write(paths)
     for p in paths:
         p = Path(p)
 
