@@ -98,10 +98,12 @@ def build_df_from_uploaded(paths, labels=None):
             for img_file in p.iterdir():
                 if img_file.is_file():
                     filepaths.append(str(img_file.resolve()))
+                    
+                    st.write(p)
         elif p.is_file():
             filepaths.append(str(p.resolve()))
     
-    st.write(p)
+            st.write(p)
     # remove duplicates
     filepaths = list(set(filepaths))
 
