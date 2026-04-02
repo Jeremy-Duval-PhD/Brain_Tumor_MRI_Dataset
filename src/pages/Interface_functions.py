@@ -109,6 +109,7 @@ def build_df_from_uploaded(paths, labels=None):
             
     # remove duplicates
     filepaths = list(set(filepaths))
+    filepaths.sort()
     if labels is None:
         # default value -> use only to compare prediction and reality during model creation
         labels = ["notumor"] * len(filepaths)
@@ -548,6 +549,7 @@ def set_model_visualisation(section):
         progress_bar = progress_bar.progress(0.0, text=progress_text)
         count = 0
         nb_files = len(st.session_state['file_names'])
+        st.session_state.file_names.sort()
         for x_batch, _ in dataset:
             for img in x_batch:
                 explainer_presence = get_presence_explainer(model, background_images.copy()) # in loop to avoid bug and help shap
@@ -569,7 +571,7 @@ def set_model_visualisation(section):
                                               type_explainers_cache=type_explainers_cache,
                                               low_memory=st.session_state.low_memory,
                                               nsamples=st.session_state.nsamples,
-                                              img_id="")
+                                              img_id=img_id)
                     
                     for warning in w:
                         if issubclass(warning.category, StdSHAPWarning):
