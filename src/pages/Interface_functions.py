@@ -100,7 +100,8 @@ def build_df_from_uploaded(paths, labels=None):
                     filepaths.append(str(img_file.resolve()))
         elif p.is_file():
             filepaths.append(str(p.resolve()))
-
+    
+    st.write(p)
     # remove duplicates
     filepaths = list(set(filepaths))
 
@@ -224,7 +225,7 @@ def preprocess_files(section, uploaded_files):
     images = [load_image(f) for f in new_files]
     nb_files = len(images)
     save_images(section, images, nb_files)
-    
+    st.write(new_files)
     model = get_preproc_model()
     ds = get_tf_dataset(model, nb_files)
     
