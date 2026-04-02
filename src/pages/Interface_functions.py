@@ -85,8 +85,6 @@ def load_image(uploaded_file):
 
 def df_file_in_file_name(name):
     name = name.name
-    st.write(f'name : {name}')
-    print(f'name : {name}')
     return not(st.session_state.file_names) or (name in st.session_state.file_names)
 
 
@@ -103,7 +101,6 @@ def build_df_from_uploaded(paths, labels=None):
         if p.is_dir():
             # browse folder
             for img_file in p.iterdir():
-                st.write(f'img_file : {img_file}')
                 if img_file.is_file():
                     if df_file_in_file_name(img_file):
                         filepaths.append(str(img_file.resolve()))
@@ -113,8 +110,6 @@ def build_df_from_uploaded(paths, labels=None):
             
     # remove duplicates
     filepaths = list(set(filepaths))
-    st.write(st.session_state.file_names)
-    st.write(filepaths)
     if labels is None:
         # default value -> use only to compare prediction and reality during model creation
         labels = ["notumor"] * len(filepaths)
@@ -575,7 +570,7 @@ def set_model_visualisation(section):
                                               type_explainers_cache=type_explainers_cache,
                                               low_memory=st.session_state.low_memory,
                                               nsamples=st.session_state.nsamples,
-                                              img_id=img_id)
+                                              img_id="")
                     
                     for warning in w:
                         if issubclass(warning.category, StdSHAPWarning):
