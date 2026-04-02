@@ -103,7 +103,7 @@ def build_df_from_uploaded(paths, labels=None):
             
     # remove duplicates
     filepaths = list(set(filepaths))
-
+    st.write(filepaths)
     if labels is None:
         # default value -> use only to compare prediction and reality during model creation
         labels = ["notumor"] * len(filepaths)
@@ -152,7 +152,7 @@ def get_clean_tfrecords(ds):
     return tfrecords
 
 
-def save_images(section, images, nb_files, filename_prefix="img"):
+def save_images(section, images, nb_files):
     count = 0
 
     progress_text = "Upload images. Please wait."
@@ -160,7 +160,6 @@ def save_images(section, images, nb_files, filename_prefix="img"):
     progress_bar = progress_bar.progress(0.0, text=progress_text)
 
     for idx, (img, file) in enumerate(images):
-        st.write(f"{idx} - {img} - {file}")
         # security for type
         if hasattr(img, "numpy"):
             img = img.numpy()
@@ -172,7 +171,8 @@ def save_images(section, images, nb_files, filename_prefix="img"):
         pil_img = Image.fromarray(img)
 
         # saving
-        img_path = st.session_state['temp_dir_raw'] / f"{filename_prefix}_{idx:04d}.jpg"
+        #img_path = st.session_state['temp_dir_raw'] / f"{filename_prefix}_{idx:04d}.jpg"
+        img_path = st.session_state['temp_dir_raw'] / f"{file}.jpg"
         pil_img.save(img_path, format="PNG")
 
         count += 1
@@ -222,7 +222,7 @@ def preprocess_files(section, uploaded_files):
             if f.name not in st.session_state['file_names']
         ]
         
-    images = [(load_image(f), f.name) for f in new_files]
+    images = [(load_image(f), f.name.split['.'][0]) for f in new_files]
     nb_files = len(images)
     save_images(section, images, nb_files)
     model = get_preproc_model()
