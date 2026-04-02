@@ -94,7 +94,6 @@ def build_df_from_uploaded(paths, labels=None):
     """
 
     filepaths = []
-    st.write(paths)
     for p in paths:
         p = Path(p)
 
