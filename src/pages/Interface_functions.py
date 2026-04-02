@@ -162,7 +162,8 @@ def save_images(section, images, nb_files):
 
     for idx, (img, file) in enumerate(images):
         st.write(file)
-        st.write(file.split['.'][0])
+        file_root = str(file).split['.'][0]
+        st.write(file_root)
         # security for type
         if hasattr(img, "numpy"):
             img = img.numpy()
@@ -175,7 +176,7 @@ def save_images(section, images, nb_files):
 
         # saving
         #img_path = st.session_state['temp_dir_raw'] / f"{filename_prefix}_{idx:04d}.jpg"
-        img_path = st.session_state['temp_dir_raw'] / f"{file.split['.'][0]}.jpg"
+        img_path = st.session_state['temp_dir_raw'] / f"{file_root}.jpg"
         pil_img.save(img_path, format="PNG")
 
         count += 1
