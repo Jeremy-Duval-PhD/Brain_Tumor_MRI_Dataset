@@ -159,7 +159,8 @@ def save_images(section, images, nb_files, filename_prefix="img"):
     progress_bar = st.session_state.progress_bar
     progress_bar = progress_bar.progress(0.0, text=progress_text)
 
-    for idx, img in enumerate(images):
+    for idx, img, file in enumerate(images):
+        st.write(f"{idx} - {img} - {file}")
         # security for type
         if hasattr(img, "numpy"):
             img = img.numpy()
@@ -221,10 +222,9 @@ def preprocess_files(section, uploaded_files):
             if f.name not in st.session_state['file_names']
         ]
         
-    images = [load_image(f) for f in new_files]
+    images = [(load_image(f), f.name) for f in new_files]
     nb_files = len(images)
     save_images(section, images, nb_files)
-    st.write(images)
     model = get_preproc_model()
     ds = get_tf_dataset(model, nb_files)
     
