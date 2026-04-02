@@ -332,11 +332,10 @@ def set_uploaded_data(section):
         or file_names != st.session_state.get('file_names', []):
 
             init_session_state_var()
+            st.session_state['file_names'] = file_names
 
             clean_files = preprocess_files(section, uploaded_files)
-
             st.session_state['clean_files'] = clean_files
-            st.session_state['file_names'] = file_names
 
     # Clear form
     if clear:
