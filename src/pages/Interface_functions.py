@@ -103,6 +103,7 @@ def build_df_from_uploaded(paths, labels=None):
             
     # remove duplicates
     filepaths = list(set(filepaths))
+    st.write(st.session_state.file_names)
     st.write(filepaths)
     if labels is None:
         # default value -> use only to compare prediction and reality during model creation
@@ -172,7 +173,7 @@ def save_images(section, images, nb_files):
 
         # saving
         #img_path = st.session_state['temp_dir_raw'] / f"{filename_prefix}_{idx:04d}.jpg"
-        img_path = st.session_state['temp_dir_raw'] / f"{file}.jpg"
+        img_path = st.session_state['temp_dir_raw'] / f"{file.split['.'][0]}.jpg"
         pil_img.save(img_path, format="PNG")
 
         count += 1
@@ -222,7 +223,7 @@ def preprocess_files(section, uploaded_files):
             if f.name not in st.session_state['file_names']
         ]
         
-    images = [(load_image(f), f.name.split['.'][0]) for f in new_files]
+    images = [(load_image(f), f.name) for f in new_files]
     nb_files = len(images)
     save_images(section, images, nb_files)
     model = get_preproc_model()
