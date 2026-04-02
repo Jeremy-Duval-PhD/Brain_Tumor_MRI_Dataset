@@ -103,6 +103,7 @@ def build_df_from_uploaded(paths, labels=None):
         if p.is_dir():
             # browse folder
             for img_file in p.iterdir():
+                st.write(f'img_file : {img_file}')
                 if img_file.is_file():
                     if df_file_in_file_name(img_file):
                         filepaths.append(str(img_file.resolve()))
@@ -223,8 +224,7 @@ def save_tf_records(section, ds, nb_files, batch_size, filename_prefix="data"):
     if writer:
         writer.close()
     
-    
-def preprocess_files(section, uploaded_files):    
+def get_new_files(uploaded_files):
     if 'clean_files' not in st.session_state:
         new_files = uploaded_files
     else:
@@ -232,7 +232,9 @@ def preprocess_files(section, uploaded_files):
             f for f in uploaded_files
             if f.name not in st.session_state['file_names']
         ]
-        
+    return new_files
+    
+def preprocess_files(section, new_files): 
     images = [(load_image(f), f.name) for f in new_files]
     nb_files = len(images)
     save_images(section, images, nb_files)
@@ -334,9 +336,10 @@ def set_uploaded_data(section):
         or file_names != st.session_state.get('file_names', []):
 
             init_session_state_var()
-            st.session_state['file_names'] = file_names
 
-            clean_files = preprocess_files(section, uploaded_files)
+            new_files =  get_new_files(uploaded_files)
+            st.session_state['file_names'] = file_names
+            clean_files = preprocess_files(section, new_files)
             st.session_state['clean_files'] = clean_files
 
     # Clear form
