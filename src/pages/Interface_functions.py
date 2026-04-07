@@ -235,14 +235,12 @@ def remove_temp_dir_raw():
     if "temp_dir_raw" in st.session_state:
         shutil.rmtree(st.session_state["temp_dir_raw"], ignore_errors=True)
         del st.session_state["temp_dir_raw"]
-        st.write("RM RAW")
 
 
 def remove_temp_dir_preproc():
     if "temp_dir_preproc" in st.session_state:
         shutil.rmtree(st.session_state["temp_dir_preproc"], ignore_errors=True)
         del st.session_state["temp_dir_preproc"]
-        st.write("RM PREP")
 
 
 def remove_temp_dir_output():
@@ -497,6 +495,10 @@ def get_file_name(path):
     return path.name.split("/")[-1]
 
 
+def get_file_id(file_name):
+    return file_name.split("_")[0]
+
+
 def display_output_images(section):
     image_paths = get_img_paths(section)
     if not image_paths:
@@ -507,12 +509,13 @@ def display_output_images(section):
         for img_path in image_paths:
             file_name = get_file_name(img_path)
             is_pres = is_presence_head(file_name)
+            file_id = get_file_id(file_name)
             pred_conf = get_pred_confidence(file_name, is_pres)
             pred = get_pred_label(file_name)
             
-            st.write(f'{file_name} - pres : {is_pres} - {tumor_detected}')
+            st.write(f'{file_name} - id : {file_id} -  pres : {is_pres} - {tumor_detected}')
             
-            if is_pres or file_name in tumor_detected:
+            if is_pres or file_id in tumor_detected:
                 try:
                     img = Image.open(img_path)
                     section.image(
@@ -525,13 +528,13 @@ def display_output_images(section):
                 
             if is_pres:
                 if pred == "tumor":
-                    tumor_detected.append(file_name)
+                    tumor_detected.append(file_id)
                 else:
-                    msg = f"{file_name}: no tumor detected, with {pred_conf}% probability."
+                    msg = f"{file_name.split('.')[0]}: no tumor detected, with {pred_conf}% probability."
                     section.badge(msg, icon=":material/check:", color="green")
             else:
-                if file_name in tumor_detected:
-                    msg= f"{file_name}: {pred} detected, with {pred_conf}% probability."
+                if file_id in tumor_detected:
+                    msg= f"{file_name.split('.')[0]}: {pred} detected, with {pred_conf}% probability."
                     section.badge(msg, icon="🚨", color="red")    
 
             
