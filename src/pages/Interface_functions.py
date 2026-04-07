@@ -247,7 +247,6 @@ def remove_temp_dir_output():
     if "temp_dir_output" in st.session_state:
         shutil.rmtree(st.session_state["temp_dir_output"], ignore_errors=True)
         del st.session_state["temp_dir_output"]
-        st.write("RM OUT")
 
     
 def preprocess_files(section, new_files): 
@@ -513,8 +512,6 @@ def display_output_images(section):
             pred_conf = get_pred_confidence(file_name, is_pres)
             pred = get_pred_label(file_name)
             
-            st.write(f'{file_name} - id : {file_id} -  pres : {is_pres} - {tumor_detected}')
-            
             if is_pres or file_id in tumor_detected:
                 try:
                     img = Image.open(img_path)
@@ -530,11 +527,11 @@ def display_output_images(section):
                 if pred == "tumor":
                     tumor_detected.append(file_id)
                 else:
-                    msg = f"{file_name.split('.')[0]}: no tumor detected, with {pred_conf}% probability."
+                    msg = f"No tumor detected, with {pred_conf}% probability."
                     section.badge(msg, icon=":material/check:", color="green")
             else:
                 if file_id in tumor_detected:
-                    msg= f"{file_name.split('.')[0]}: {pred} detected, with {pred_conf}% probability."
+                    msg= f"{pred.capitalize()} detected, with {pred_conf}% probability."
                     section.badge(msg, icon="🚨", color="red")    
 
             
