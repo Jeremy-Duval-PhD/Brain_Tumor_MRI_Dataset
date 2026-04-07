@@ -261,7 +261,6 @@ def preprocess_files(section, new_files):
     
     with st.spinner("Preprosessing images in progress...", show_time=True):
         preproc_img = get_clean_tfrecords(ds)
-    remove_temp_dir_raw() #removing raw img dir to save memory on cloud
     
     batch_size = st.session_state['config']['model']['batch_size']
     save_tf_records(section, ds, nb_files, batch_size)
@@ -362,6 +361,7 @@ def set_uploaded_data(section):
             st.session_state['file_names'] = file_names
             clean_files = preprocess_files(section, new_files)
             st.session_state['clean_files'] = clean_files
+            remove_temp_dir_raw() #removing raw img dir to save memory on cloud
 
     # Clear form
     if clear:
