@@ -467,11 +467,6 @@ def get_pred_label(file):
     return file.split('__')[-1].split('_')[0]
 
 
-def get_file_root(file):
-    splited = file.split('_')
-    return splited[0] + '_' + splited[1]
-
-
 def get_file_name(path):
     return path.name.split("/")[-1]
 
@@ -485,35 +480,31 @@ def display_output_images(section):
     with section.container():
         for img_path in image_paths:
             file_name = get_file_name(img_path)
-            root = get_file_root(file_name)
-            in_file_n = is_in_file_names(root)
+            is_pres = is_presence_head(file_name)
+            pred_conf = get_pred_confidence(file_name, is_pres)
+            pred = get_pred_label(file_name)
             
-            if in_file_n:
-                is_pres = is_presence_head(file_name)
-                pred_conf = get_pred_confidence(file_name, is_pres)
-                pred = get_pred_label(file_name)
+            if is_pres or file_name in tumor_detected:
+                try:
+                    img = Image.open(img_path)
+                    section.image(
+                        img,
+                        caption=img_path.name,
+                        use_column_width=True
+                    )
+                except Exception as e:
+                    section.warning(f"Error loading {img_path.name}: {e}")
                 
-                if is_pres or root in tumor_detected:
-                    try:
-                        img = Image.open(img_path)
-                        section.image(
-                            img,
-                            caption=img_path.name,
-                            use_column_width=True
-                        )
-                    except Exception as e:
-                        section.warning(f"Error loading {img_path.name}: {e}")
-                    
-                if is_pres:
-                    if pred == "tumor":
-                        tumor_detected.append(root)
-                    else:
-                        msg = f"{root}: no tumor detected, with {pred_conf}% probability."
-                        section.badge(msg, icon=":material/check:", color="green")
+            if is_pres:
+                if pred == "tumor":
+                    tumor_detected.append(file_name)
                 else:
-                    if root in tumor_detected:
-                        msg= f"{root}: {pred} detected, with {pred_conf}% probability."
-                        section.badge(msg, icon="🚨", color="red")    
+                    msg = f"{file_name}: no tumor detected, with {pred_conf}% probability."
+                    section.badge(msg, icon=":material/check:", color="green")
+            else:
+                if file_name in tumor_detected:
+                    msg= f"{file_name}: {pred} detected, with {pred_conf}% probability."
+                    section.badge(msg, icon="🚨", color="red")    
 
             
             
@@ -571,7 +562,7 @@ def set_model_visualisation(section):
                                               type_explainers_cache=type_explainers_cache,
                                               low_memory=st.session_state.low_memory,
                                               nsamples=st.session_state.nsamples,
-                                              img_id=img_id)
+                                              img_id=count)
                     
                     for warning in w:
                         if issubclass(warning.category, StdSHAPWarning):
