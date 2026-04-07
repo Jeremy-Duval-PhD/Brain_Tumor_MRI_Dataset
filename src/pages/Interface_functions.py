@@ -11,6 +11,7 @@ from PIL import Image
 import tempfile
 import pandas as pd
 import warnings
+import shutil
 from src.models.model_archi import get_model_built
 from src.models.commons import run_medical_XAI_one_image, get_presence_explainer, \
                                load_tfrecord_dataset, split_labels, StdSHAPWarning
@@ -228,6 +229,28 @@ def get_new_files(uploaded_files):
             if f.name not in st.session_state['file_names']
         ]
     return new_files
+
+
+def remove_temp_dir_raw():
+    if "temp_dir_raw" in st.session_state:
+        shutil.rmtree(st.session_state["temp_dir_raw"], ignore_errors=True)
+        del st.session_state["temp_dir_raw"]
+        st.write("RM RAW")
+
+
+def remove_temp_dir_preproc():
+    if "temp_dir_preproc" in st.session_state:
+        shutil.rmtree(st.session_state["temp_dir_preproc"], ignore_errors=True)
+        del st.session_state["temp_dir_preproc"]
+        st.write("RM PREP")
+
+
+def remove_temp_dir_output():
+    if "temp_dir_output" in st.session_state:
+        shutil.rmtree(st.session_state["temp_dir_output"], ignore_errors=True)
+        del st.session_state["temp_dir_output"]
+        st.write("RM OUT")
+
     
 def preprocess_files(section, new_files): 
     images = [(load_image(f), f.name) for f in new_files]
@@ -238,6 +261,7 @@ def preprocess_files(section, new_files):
     
     with st.spinner("Preprosessing images in progress...", show_time=True):
         preproc_img = get_clean_tfrecords(ds)
+    remove_temp_dir_raw() #removing raw img dir to save memory on cloud
     
     batch_size = st.session_state['config']['model']['batch_size']
     save_tf_records(section, ds, nb_files, batch_size)
@@ -251,6 +275,8 @@ def reactivate_form(rerun=True):
 
     if 'clean_files' in st.session_state:
         session_clear()
+        
+    remove_temp_dir_output()
 
     if rerun:
         st.rerun()
@@ -484,6 +510,8 @@ def display_output_images(section):
             pred_conf = get_pred_confidence(file_name, is_pres)
             pred = get_pred_label(file_name)
             
+            st.write(f'{file_name} - pres : {is_pres} - {tumor_detected}')
+            
             if is_pres or file_name in tumor_detected:
                 try:
                     img = Image.open(img_path)
@@ -577,6 +605,7 @@ def set_model_visualisation(section):
                 gc.collect()
     
         progress_bar.progress(1.0, text="MRI processing done ✅")
+        remove_temp_dir_preproc() # removing tfrecords dir to gain memory on cloud
         
         image_paths = get_img_paths(section) 
         with section.container(border=True):
