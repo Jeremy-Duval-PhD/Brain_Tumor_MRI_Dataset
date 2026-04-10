@@ -23,7 +23,7 @@ The aim of this project is to develop a computer vision model. Its role is to di
 
 The app is deployed on [Streamlit Cloud](https://brain-tumor-detector-by-mri.streamlit.app/).
 
-It is also avalaible on [Docker]().
+It is also avalaible on [Docker](https://hub.docker.com/repository/docker/jduvalphd/brain-tumor-detector-by-mri).
 
 And the the model is on [Hugging Face](https://huggingface.co/Jeremy-Duval-PhD/Brain_Tumor_Detector/tree/main).
 
