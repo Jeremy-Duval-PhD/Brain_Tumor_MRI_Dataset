@@ -1,0 +1,58 @@
+name: Python application
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-venv python3-pip
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Create and activate virtualenv
+      run: |
+        python -m venv .venv
+        source .venv/bin/activate
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov flake8
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Lint
+      run: |
+        source .venv/bin/activate
+        flake8 src tests --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=.venv,__pycache__
+        flake8 src tests --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude=.venv,__pycache__
+
+    - name: Run tests
+      run: |
+        source .venv/bin/activate
+        pytest -m "not slow" --cov=src --cov-report=term-missing
