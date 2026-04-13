@@ -43,7 +43,7 @@ jobs:
         python -m venv .venv
         source .venv/bin/activate
         python -m pip install --upgrade pip
-        pip install pytest pytest-cov flake8
+        pip install pytest pytest-cov flake8 pytest-timeout
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
     - name: Lint
@@ -55,4 +55,4 @@ jobs:
     - name: Run tests
       run: |
         source .venv/bin/activate
-        pytest -m "not slow" --cov=src --cov-report=term-missing
+        pytest -m "not slow" --cov=src --cov-report=term-missing --cov-fail-under=70
