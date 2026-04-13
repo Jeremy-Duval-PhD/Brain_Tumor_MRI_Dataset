@@ -147,7 +147,7 @@ def run_training_heads(model, loss_weight_presence, loss_weight_type,\
     two_head = config["model"]["two_head"]
     data_augmentation = config["model"]["data_augmentation"]
     checkpoint_dir = config["path"]["checkpoint_dir"]
-    model_name = f"{project_name}_{model_type}_{two_head*"2Head"}"
+    model_name = f"{project_name}_{model_type}_{'2Head' if two_head else '1Head'}"
     epochs = config["model"]["epochs"]
     
     
