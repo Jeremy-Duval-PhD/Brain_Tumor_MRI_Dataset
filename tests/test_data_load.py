@@ -11,6 +11,15 @@ from src.data.data_load import (
     download_data,
 )
 
+# ---------------------------
+# Mock for tests
+# ---------------------------
+import sys
+from unittest.mock import MagicMock
+
+sys.modules["kagglehub"] = MagicMock()
+
+
 
 # ---------------------------
 # load_config tests
