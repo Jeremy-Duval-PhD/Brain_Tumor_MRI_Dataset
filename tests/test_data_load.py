@@ -5,12 +5,6 @@ import pytest
 from pathlib import Path
 from unittest.mock import patch
 
-from src.data.data_load import (
-    load_config,
-    setup_kaggle_credentials,
-    download_data,
-)
-
 # ---------------------------
 # Mock for tests
 # ---------------------------
@@ -18,6 +12,16 @@ import sys
 from unittest.mock import MagicMock
 
 sys.modules["kagglehub"] = MagicMock()
+
+# ---------------------------
+# file to test import
+# ---------------------------
+
+from src.data.data_load import (
+    load_config,
+    setup_kaggle_credentials,
+    download_data,
+)
 
 
 
