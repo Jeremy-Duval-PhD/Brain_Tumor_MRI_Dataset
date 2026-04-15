@@ -27,7 +27,7 @@ import pandas as pd
 from sklearn.metrics import f1_score
 
 from commons import load_tfrecord_dataset, split_labels
-from model_archi import  get_model_built, compile_model
+from model_archi import  get_model_built, compile_model, masked_sparse_cce
 
 
 # --- Logger Configuration ---
@@ -333,7 +333,7 @@ def run_training_finetuning(model, loss_weight_presence, loss_weight_type,\
     two_head = config["model"]["two_head"]
     data_augmentation = config["model"]["data_augmentation"]
     checkpoint_dir = config["path"]["checkpoint_dir"]
-    model_name = f"{project_name}_{model_type}_{two_head*"2Head"}"
+    model_name = f"{project_name}_{model_type}_{'2Head' if two_head else '1Head'}"
     epochs = config["model"]["epochs"]
     
     
@@ -477,7 +477,7 @@ def main():
     model_type = config["model"]["model_type"]
     two_head = config["model"]["two_head"]
     checkpoint_dir = config["path"]["checkpoint_dir"]
-    model_name = f"{project_name}_{model_type}_{two_head*"2Head"}"
+    model_name = f"{project_name}_{model_type}_{'2Head' if two_head else '1Head'}"
     
     """Model rebuild"""
     model = get_model_built(
