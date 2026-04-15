@@ -53,6 +53,8 @@ jobs:
         flake8 src tests --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude=.venv,__pycache__
 
     - name: Run tests
+      env:
+        PYTHONPATH: ${{ github.workspace }}/src
       run: |
         source .venv/bin/activate
         pytest -m "not slow" --cov=src --cov-report=term-missing --cov-fail-under=70
