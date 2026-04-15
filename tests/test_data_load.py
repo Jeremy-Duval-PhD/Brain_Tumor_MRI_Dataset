@@ -132,9 +132,12 @@ def test_download_data_copy_failure(mock_download, tmp_path):
     fake_download_dir = tmp_path / "downloaded"
     fake_download_dir.mkdir()
 
+    # IMPORTANT: create a file so copy2 is triggered
+    fake_file = fake_download_dir / "test.txt"
+    fake_file.write_text("dummy")
+
     mock_download.return_value = str(fake_download_dir)
 
-    # Force copy failure by mocking shutil.copy2
     with patch("shutil.copy2", side_effect=Exception("Copy error")):
         with pytest.raises(Exception):
             download_data("dummy_dataset", tmp_path / "output")
