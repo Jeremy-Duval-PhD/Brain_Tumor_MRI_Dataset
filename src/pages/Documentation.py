@@ -22,7 +22,7 @@ tab_licence.markdown(legal.get_polyform_licence_markdown())
 tab_storage.markdown('''
                     # Data Storage in the Application
 
-                    *MRI images are temporarily stored in the application.* To prevent data from being retained and to optimize memory usage when running on the cloud, images are deleted after each step:
+                    **MRI images are temporarily stored in the application.** To prevent data from being retained and to optimize memory usage when running on the cloud, images are deleted after each step:
                     
                     - the original images after preprocessing
                     - the preprocessed images after the explainability step
