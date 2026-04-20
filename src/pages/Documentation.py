@@ -1,18 +1,35 @@
 import streamlit as st
 import src.pages.Licence_and_disclaimer as legal
+import src.pages.General_interpretability as GI
 
 if 'diclaimer_read' not in st.session_state or not st.session_state['diclaimer_read']:
     legal.dialog_important_info()
 
 st.title("Documentations")
 
-tab_discl, tab_licence, tab_eda, tab_prep, tab_model = st.tabs(["Medical Disclaimer", "Licences", "Exploratory Data Analysis", "Preprocessing", "Modelling"])  
+tab_discl, tab_licence, tab_storage, tab_eda, tab_prep, tab_model, tab_interpr = \
+    st.tabs(["Medical Disclaimer", "Licences", \
+             "Data Storage", "Exploratory Data Analysis", \
+             "Preprocessing", "Modelling", \
+             "General Interpretability"])  
 
 tab_discl.markdown(legal.get_medical_disclaimer_markdown())
 
 tab_licence.markdown(legal.get_commercial_licence_markdown())
 tab_licence.divider()
 tab_licence.markdown(legal.get_polyform_licence_markdown())
+
+tab_storage.markdown('''
+                    # Data Storage in the Application
+
+                    *MRI images are temporarily stored in the application.* To prevent data from being retained and to optimize memory usage when running on the cloud, images are deleted after each step:
+                    
+                    - the original images after preprocessing
+                    - the preprocessed images after the explainability step
+                    - the final images after downloading or resetting
+                    
+                    In any case, all storage repositories are temporary and if you are on the Streamlit Cloud, data are not persistent.
+                    ''')
 
 tab_eda.markdown('''
             # EDA (Notebook)
@@ -645,3 +662,5 @@ tab_model.markdown('''
             
             The grad-CAM and SHAP overlays were then combined to visualize the areas common to both (see the “Agreement” graph).
                    ''')
+                   
+tab_interpr = GI.interpretability_global_elem(st)
